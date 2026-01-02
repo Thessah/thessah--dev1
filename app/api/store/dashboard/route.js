@@ -9,88 +9,125 @@ import { NextResponse } from "next/server";
 // Next.js API route handler for GET
 export async function GET(request) {
    try {
-      let isAdmin = false;
+      console.log('[DASHBOARD] Request received');
       
-      // Check for admin session (username/password login)
-      const adminSessionHeader = request.headers.get('x-admin-session');
+      // Get user from Firebase token
+      const authHeader = request.headers.get('authorization');
+      console.log('[DASHBOARD] Auth header present:', !!authHeader);
       
-      if (adminSessionHeader) {
-         try {
-            const session = JSON.parse(adminSessionHeader);
-            const adminUsername = process.env.NEXT_PUBLIC_ADMIN_USERNAME || 'admin';
-            const sessionAge = Date.now() - session.loginTime;
-            const maxAge = 24 * 60 * 60 * 1000; // 24 hours
-            
-            if (session.username === adminUsername && sessionAge < maxAge) {
-               isAdmin = true;
-            } else {
-               return NextResponse.json({ error: 'Invalid or expired admin session' }, { status: 401 });
-            }
-         } catch (e) {
-            return NextResponse.json({ error: 'Invalid admin session format' }, { status: 401 });
-         }
-      } else {
-         // Firebase Auth: Extract token from Authorization header
-         const authHeader = request.headers.get('authorization');
-         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-         }
+      let userId = null;
+      
+      if (authHeader && authHeader.startsWith('Bearer ')) {
          const idToken = authHeader.split('Bearer ')[1];
+         console.log('[DASHBOARD] Token extracted, verifying...');
+         
          const { getAuth } = await import('firebase-admin/auth');
          const { initializeApp, applicationDefault, getApps } = await import('firebase-admin/app');
          if (getApps().length === 0) {
             initializeApp({ credential: applicationDefault() });
          }
-         let decodedToken;
          try {
-            decodedToken = await getAuth().verifyIdToken(idToken);
+            const decodedToken = await getAuth().verifyIdToken(idToken);
+            userId = decodedToken.uid;
+            console.log('[DASHBOARD] Token verified, userId:', userId);
          } catch (e) {
+            console.error('[DASHBOARD] Token verification failed:', e.message);
             return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
          }
-         const userId = decodedToken.uid;
-         const email = decodedToken.email;
-         
-         // Check if user is admin
-         const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').split(',').map(e => e.trim());
-         isAdmin = adminEmails.includes(email);
-         
-         if (!isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized: Admin access required' }, { status: 403 });
-         }
+      } else {
+         console.error('[DASHBOARD] No valid auth header');
+         return NextResponse.json({ error: 'Missing authorization header' }, { status: 401 });
       }
 
-      const storeId = 'admin-store'; // Use a fixed storeId for admin
+      const storeId = await authSeller(userId);
+      console.log('[DASHBOARD] Store ID:', storeId);
+      
+      if (!storeId) {
+         // User doesn't have an approved store yet - return empty dashboard
+         console.log('[DASHBOARD] User has no approved store');
+         return NextResponse.json({
+            dashboardData: {
+               ratings: [],
+               totalOrders: 0,
+               totalEarnings: 0,
+               totalProducts: 0,
+               totalCustomers: 0,
+               abandonedCarts: 0
+            },
+            message: 'No approved store found'
+         }, { status: 200 });
+      }
 
-      await dbConnect();
-      // Get all orders for seller
-      const orders = await Order.find({ storeId }).lean();
+      try {
+         await dbConnect();
+      } catch (dbError) {
+         console.error('❌ MongoDB connection failed:', dbError.message);
+         return NextResponse.json({
+            dashboardData: {
+               ratings: [],
+               totalOrders: 0,
+               totalEarnings: 0,
+               totalProducts: 0,
+               totalCustomers: 0,
+               abandonedCarts: 0
+            },
+            error: 'Database connection error - returning fallback data'
+         }, { status: 200 });
+      }
+      
+      try {
+         const orders = await Order.find({ storeId }).lean();
 
-      // Get all products with ratings for seller
-      const products = await Product.find({ storeId }).lean();
+         // Get all products with ratings for seller
+         const products = await Product.find({ storeId }).lean();
 
-      const ratings = await Rating.find({
-         productId: { $in: products.map(product => product._id.toString()) }
-      }).lean();
+         const ratings = await Rating.find({
+            productId: { $in: products.map(product => product._id.toString()) }
+         }).lean();
 
-      // Get unique customers who have ordered from this store
-      const uniqueCustomerIds = [...new Set(orders.map(order => order.userId))];
-      const totalCustomers = uniqueCustomerIds.length;
+         // Get unique customers who have ordered from this store
+         const uniqueCustomerIds = [...new Set(orders.map(order => order.userId))];
+         const totalCustomers = uniqueCustomerIds.length;
 
-      // Get abandoned carts for this store
-      const abandonedCarts = await AbandonedCart.countDocuments({ storeId });
+         // Get abandoned carts for this store
+         const abandonedCarts = await AbandonedCart.countDocuments({ storeId });
 
-      const dashboardData = {
-         ratings,
-         totalOrders: orders.length,
-         totalEarnings: Math.round(orders.reduce((acc, order) => acc + (order.total || 0), 0)),
-         totalProducts: products.length,
-         totalCustomers,
-         abandonedCarts
-      };
+         const dashboardData = {
+            ratings,
+            totalOrders: orders.length,
+            totalEarnings: Math.round(orders.reduce((acc, order) => acc + (order.total || 0), 0)),
+            totalProducts: products.length,
+            totalCustomers,
+            abandonedCarts
+         };
 
-      return NextResponse.json({ dashboardData });
+         return NextResponse.json({ dashboardData }, { status: 200 });
+      } catch (queryError) {
+         console.error('❌ Query error:', queryError.message);
+         return NextResponse.json({
+            dashboardData: {
+               ratings: [],
+               totalOrders: 0,
+               totalEarnings: 0,
+               totalProducts: 0,
+               totalCustomers: 0,
+               abandonedCarts: 0
+            },
+            error: 'Query timeout - returning fallback data'
+         }, { status: 200 });
+      }
    } catch (error) {
-      console.error(error);
-      return NextResponse.json({ error: error.code || error.message }, { status: 400 });
+      console.error('❌ Dashboard error:', error.message);
+      return NextResponse.json({ 
+         error: error.message,
+         dashboardData: {
+            ratings: [],
+            totalOrders: 0,
+            totalEarnings: 0,
+            totalProducts: 0,
+            totalCustomers: 0,
+            abandonedCarts: 0
+         }
+      }, { status: 200 });
    }
 }

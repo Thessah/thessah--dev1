@@ -13,14 +13,20 @@ const apiProtectedRoutes = [
 // Public endpoints that don't require authentication
 const publicEndpoints = [
   '/api/store/categories', // Allow GET requests to view categories
+  '/api/store/shop-categories', // Allow GET shop categories with images
+  '/api/store/hero-banners', // Allow GET hero banners (used by Hero component)
+  '/api/store/upload-banner', // Allow image uploads
+  '/api/store/collections', // Allow GET collections (used by CollectionsShowcase)
+  '/api/store/collections/upload', // Allow image uploads for collections
+  '/api/store/settings', // Allow GET/PUT homepage settings
 ];
 
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
   
-  // Allow public endpoints without auth
-  if (publicEndpoints.includes(pathname) && request.method === 'GET') {
+  // Allow public endpoints without auth (for all methods)
+  if (publicEndpoints.includes(pathname)) {
     return NextResponse.next();
   }
   

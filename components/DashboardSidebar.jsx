@@ -2,9 +2,20 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut } from 'firebase/auth'
+import { auth } from '@/lib/firebase'
+import { useAuth } from '@/lib/useAuth'
 
 export default function DashboardSidebar() {
   const pathname = usePathname()
+  const { user } = useAuth()
+
+  const handleLogout = async () => {
+    if (user) {
+      await signOut(auth)
+      window.location.href = '/'
+    }
+  }
 
   const menuItems = [
     { label: 'Profile', href: '/dashboard/profile' },
@@ -53,26 +64,34 @@ export default function DashboardSidebar() {
       </div>
 
       {/* Desktop sidebar */}
-      <aside className="hidden md:block md:col-span-1 bg-white border border-slate-200 rounded-xl shadow-sm p-4 h-fit">
-        <h2 className="text-sm font-semibold text-slate-800 mb-3">Dashboard</h2>
-        <nav className="flex flex-col gap-1 text-sm">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`px-3 py-2 rounded-lg hover:bg-gray-100 font-medium ${
-                isActive(item.href)
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'text-gray-700'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="mt-4 text-xs text-slate-500">
-          Manage your account and preferences.
+      <aside className="hidden md:block md:col-span-1 bg-white border border-slate-200 rounded-xl shadow-sm p-4 h-fit flex flex-col">
+        <div>
+          <h2 className="text-sm font-semibold text-slate-800 mb-3">Dashboard</h2>
+          <nav className="flex flex-col gap-1 text-sm">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`px-3 py-2 rounded-lg hover:bg-gray-100 font-medium ${
+                  isActive(item.href)
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-700'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="mt-4 text-xs text-slate-500">
+            Manage your account and preferences.
+          </div>
         </div>
+        <button
+          onClick={handleLogout}
+          className="mt-auto pt-4 border-t border-slate-200 w-full px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-medium text-sm"
+        >
+          Logout
+        </button>
       </aside>
     </>
   )

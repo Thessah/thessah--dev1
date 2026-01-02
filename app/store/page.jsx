@@ -1,5 +1,4 @@
 'use client'
-import Loading from "@/components/Loading"
 
 import axios from "axios"
 
@@ -10,14 +9,10 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { useAuth } from '@/lib/useAuth'
 
 export default function Dashboard() {
-    const { user, loading: authLoading, getToken } = useAuth();
-    console.log('[page.jsx] user:', user, 'authLoading:', authLoading);
     const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
     const router = useRouter()
-    const [loading, setLoading] = useState(true)
     const [dashboardData, setDashboardData] = useState({
         totalProducts: 0,
         totalEarnings: 0,
@@ -37,48 +32,93 @@ export default function Dashboard() {
 
     useEffect(() => {
         const fetchDashboard = async () => {
-            // Check for admin session
-            const adminSession = localStorage.getItem('adminSession');
-            
-            if (!user && !adminSession) {
-                setLoading(false);
-                return;
-            }
-
             try {
-                let headers = {};
+                // Dynamically import Firebase
+                const { auth } = await import('@/lib/firebase');
                 
-                if (adminSession) {
-                    headers['x-admin-session'] = adminSession;
-                } else {
-                    const token = await getToken();
-                    headers['Authorization'] = `Bearer ${token}`;
-                }
-                
-                const { data } = await axios.get('/api/store/dashboard', { headers });
-                setDashboardData(data.dashboardData);
+                // Set up auth state listener to wait for auth to be ready
+                return new Promise((resolve) => {
+                    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+                        try {
+                            if (!user) {
+                                console.log('[Dashboard] User not authenticated');
+                                setDashboardData({
+                                    ratings: [],
+                                    totalOrders: 0,
+                                    totalEarnings: 0,
+                                    totalProducts: 0,
+                                    totalCustomers: 0,
+                                    abandonedCarts: 0
+                                });
+                                unsubscribe();
+                                resolve();
+                                return;
+                            }
+                            
+                            console.log('[Dashboard] User authenticated:', user.uid);
+                            
+                            try {
+                                const token = await user.getIdToken();
+                                console.log('[Dashboard] Token obtained:', token.substring(0, 20) + '...');
+                                
+                                const response = await axios.get('/api/store/dashboard', { 
+                                    timeout: 5000,
+                                    headers: {
+                                        Authorization: `Bearer ${token}`
+                                    }
+                                });
+                                
+                                console.log('[Dashboard] API Response:', response.status, response.data);
+                                
+                                if (response.data?.dashboardData) {
+                                    console.log('[Dashboard] Setting dashboard data');
+                                    setDashboardData(response.data.dashboardData);
+                                } else if (response.data) {
+                                    console.log('[Dashboard] Using fallback data:', response.data);
+                                }
+                            } catch (tokenError) {
+                                console.error('[Dashboard] Token or API error:', tokenError.message);
+                                console.error('[Dashboard] Error response:', tokenError.response?.status, tokenError.response?.data);
+                                setDashboardData({
+                                    ratings: [],
+                                    totalOrders: 0,
+                                    totalEarnings: 0,
+                                    totalProducts: 0,
+                                    totalCustomers: 0,
+                                    abandonedCarts: 0
+                                });
+                            }
+                        } catch (error) {
+                            console.error('[Dashboard] Outer catch error:', error.message);
+                            setDashboardData({
+                                ratings: [],
+                                totalOrders: 0,
+                                totalEarnings: 0,
+                                totalProducts: 0,
+                                totalCustomers: 0,
+                                abandonedCarts: 0
+                            });
+                        } finally {
+                            unsubscribe();
+                            resolve();
+                        }
+                    });
+                });
             } catch (error) {
-                console.error('Dashboard fetch error:', error);
-                toast.error(error?.response?.data?.error || 'Failed to load dashboard');
-            } finally {
-                setLoading(false);
+                console.error('[Dashboard] Firebase import error:', error.message);
+                setDashboardData({
+                    ratings: [],
+                    totalOrders: 0,
+                    totalEarnings: 0,
+                    totalProducts: 0,
+                    totalCustomers: 0,
+                    abandonedCarts: 0
+                });
             }
         };
 
-        if (!authLoading) {
-            fetchDashboard();
-        }
-    }, [authLoading, user]);
-
-    if (authLoading || loading) return <Loading />
-
-    if (!user) {
-        return (
-            <div className="min-h-[80vh] mx-6 flex items-center justify-center text-slate-400">
-                <h1 className="text-2xl sm:text-4xl font-semibold">Please <span className="text-slate-500">Login</span> to view your dashboard</h1>
-            </div>
-        );
-    }
+        fetchDashboard();
+    }, []);
 
     return (
         <div className=" text-slate-500 mb-28">

@@ -6,40 +6,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import axios from 'axios'
 
-// Fallback banners
-import Banner1 from '../assets/herobanner/BannerA5.webp'
-import Banner2 from '../assets/herobanner/BannerA4.webp'
-import Banner3 from '../assets/herobanner/BannerA6.webp'
-
-const fallbackSlides = [
-  {
-    image: Banner1,
-    badge: '0% deduction on exchange',
-    subtitle: "India's new strength",
-    title: 'Your old gold.',
-    description:
-      'Help India reduce gold imports by exchanging your old gold for new jewellery with Tanishq.',
-    cta: 'EXPLORE NOW',
-    link: '/shop'
-  },
-  {
-    image: Banner2,
-    subtitle: 'Every Ear',
-    title: 'Stunning',
-    cta: 'SHOP NOW',
-    link: '/shop?category=earrings'
-  },
-  {
-    image: Banner3,
-    subtitle: 'Wedding Collection',
-    title: 'Timeless Elegance',
-    cta: 'SHOP NOW',
-    link: '/shop?category=wedding'
-  }
-]
-
 export default function Hero() {
-  const [slides, setSlides] = useState(fallbackSlides)
+  const [slides, setSlides] = useState([])
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -48,27 +16,39 @@ export default function Hero() {
   const [prevTranslate, setPrevTranslate] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(true)
 
-  // Fetch banners from API
+  // Fetch banners from store API
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        const res = await axios.get('/api/admin/hero-banners')
+        console.log('Fetching banners from /api/store/hero-banners...');
+        const res = await axios.get('/api/store/hero-banners')
+        console.log('Banners response:', res.data);
+        
         if (res.data.banners && res.data.banners.length > 0) {
-          // Convert database banners to slides format
-          const dbSlides = res.data.banners.map(banner => ({
-            image: banner.image || Banner1,
-            badge: banner.badge || '',
-            subtitle: banner.subtitle || '',
-            title: banner.title || '',
-            description: banner.description || '',
-            cta: banner.cta || 'SHOP NOW',
-            link: banner.link || '/shop'
-          }))
-          setSlides(dbSlides)
+          // Filter only active banners
+          const activeBanners = res.data.banners.filter(b => b.isActive !== false)
+          console.log('Active banners:', activeBanners.length);
+          
+          if (activeBanners.length > 0) {
+            // Convert database banners to slides format
+            const dbSlides = activeBanners.map(banner => ({
+              image: banner.image || '',
+              badge: banner.badge || '',
+              subtitle: banner.subtitle || '',
+              title: banner.title || '',
+              description: banner.description || '',
+              cta: banner.cta || 'SHOP NOW',
+              link: banner.link || '/shop'
+            }))
+            console.log('Slides loaded:', dbSlides.length);
+            setSlides(dbSlides)
+          }
+        } else {
+          console.log('No banners found, slides will be empty');
         }
       } catch (error) {
         console.error('Error fetching banners:', error)
-        // Use fallback slides if fetch fails
+        // If no banners available, slides will remain empty
       }
     }
     fetchBanners()
@@ -136,6 +116,11 @@ export default function Hero() {
   // Create infinite loop array
   const infiniteSlides = [...slides.slice(-1), ...slides, ...slides.slice(0, 1)]
   const actualIndex = index + 1
+
+  // Don't render if no slides
+  if (slides.length === 0) {
+    return null
+  }
 
   return (
     <section className="relative w-full bg-white py-6 sm:py-8">

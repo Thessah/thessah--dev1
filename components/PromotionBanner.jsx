@@ -1,14 +1,70 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import axios from 'axios'
 
 export default function PromotionBanner() {
+  const [settings, setSettings] = useState({
+    backgroundColor: '#fef3c7',
+    leftSection: {
+      title: '#GiftOfChdoice',
+      titleColor: '#dc2626',
+      subtitle: "Breathtaking gifts for your loved one's",
+      subtitleColor: '#374151',
+      price: 'STARTING AT ₹10,000',
+      priceColor: '#dc2626',
+      buttonText: 'Explore Now',
+      buttonLink: '/shop?collection=gifts',
+      buttonColor: '#dc2626',
+      buttonBgColor: '#dc2626'
+    },
+    rightSection: {
+      branding: 'TANISHQ',
+      brandingColor: '#f59e0b',
+      title: 'Exchange your Old Gold',
+      titleColor: '#111827',
+      subtitle: 'for 100% Value!',
+      subtitleColor: '#dc2626',
+      description1: 'Unlock full value for your old gold today with',
+      description1Color: '#2563eb',
+      description2: 'our Exchange Program!',
+      description2Color: '#111827',
+      buttonText: 'Know more',
+      buttonLink: '/exchange-gold',
+      buttonColor: '#f59e0b',
+      buttonBgColor: '#f59e0b'
+    }
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchData()
+    const interval = setInterval(fetchData, 10000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const settingsRes = await axios.get('/api/store/settings')
+
+      if (settingsRes.data.settings?.section6PromotionBanner) {
+        setSettings(settingsRes.data.settings.section6PromotionBanner)
+      }
+
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching section 6 data:', error)
+      setLoading(false)
+    }
+  }
+
   return (
-    <section className="w-full bg-amber-50 py-16 sm:py-20 lg:py-24">
+    <section className="w-full py-16 sm:py-20 lg:py-24" style={{ backgroundColor: settings.backgroundColor }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
-          {/* Left Section - Gift of Choice */}
+          {/* Left Section */}
           <div className="flex flex-col justify-center">
             {/* Decorative Cross Icon */}
             <div className="mb-8">
@@ -29,60 +85,72 @@ export default function PromotionBanner() {
             </div>
 
             {/* Content */}
-            <h3 className="text-4xl sm:text-5xl font-serif text-red-600 mb-4">
-              #GiftOfChoice
+            <h3 className="text-4xl sm:text-5xl font-serif mb-4" style={{ color: settings.leftSection.titleColor }}>
+              {settings.leftSection.title}
             </h3>
-            <p className="text-gray-700 text-sm mb-2">
-              Breathtaking gifts for your loved one's
+            <p className="text-sm mb-2" style={{ color: settings.leftSection.subtitleColor }}>
+              {settings.leftSection.subtitle}
             </p>
-            <p className="text-lg font-bold text-red-600 mb-8">
-              STARTING AT ₹10,000
+            <p className="text-lg font-bold mb-8" style={{ color: settings.leftSection.priceColor }}>
+              {settings.leftSection.price}
             </p>
             <div>
               <Link
-                href="/shop?collection=gifts"
-                className="inline-flex items-center gap-2 px-6 py-3 border-2 border-red-600 text-red-600 font-semibold hover:bg-red-600 hover:text-white transition-all duration-300 rounded-full text-sm"
+                href={settings.leftSection.buttonLink}
+                className="inline-flex items-center gap-2 px-6 py-3 border-2 font-semibold hover:text-white transition-all duration-300 rounded-full text-sm"
+                style={{ 
+                  borderColor: settings.leftSection.buttonColor, 
+                  color: settings.leftSection.buttonColor 
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = settings.leftSection.buttonBgColor}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
-                Explore Now
+                {settings.leftSection.buttonText}
                 <span>›</span>
               </Link>
             </div>
           </div>
 
-          {/* Right Section - Exchange Gold */}
+          {/* Right Section */}
           <div className="flex flex-col justify-center">
             {/* Branding */}
-            <p className="text-amber-500 text-xs font-semibold tracking-widest mb-6">
-              TANISHQ
+            <p className="text-xs font-semibold tracking-widest mb-6" style={{ color: settings.rightSection.brandingColor }}>
+              {settings.rightSection.branding}
             </p>
 
             {/* Main Heading */}
-            <h2 className="text-4xl sm:text-5xl font-serif text-gray-900 mb-3 leading-tight">
-              Exchange your Old Gold
+            <h2 className="text-4xl sm:text-5xl font-serif mb-3 leading-tight" style={{ color: settings.rightSection.titleColor }}>
+              {settings.rightSection.title}
             </h2>
             
             {/* Red accent text */}
-            <p className="text-2xl sm:text-3xl font-serif text-red-600 mb-6">
-              for 100% Value!
+            <p className="text-2xl sm:text-3xl font-serif mb-6" style={{ color: settings.rightSection.subtitleColor }}>
+              {settings.rightSection.subtitle}
             </p>
 
             {/* Descriptive text */}
             <div className="mb-8">
-              <p className="text-blue-600 text-sm mb-1">
-                Unlock full value for your old gold today with
+              <p className="text-sm mb-1" style={{ color: settings.rightSection.description1Color }}>
+                {settings.rightSection.description1}
               </p>
-              <p className="text-gray-900 font-semibold">
-                our Exchange Program!
+              <p className="font-semibold" style={{ color: settings.rightSection.description2Color }}>
+                {settings.rightSection.description2}
               </p>
             </div>
 
             {/* CTA Button */}
             <div>
               <Link
-                href="/exchange-gold"
-                className="inline-flex items-center gap-2 px-6 py-3 border-2 border-amber-500 text-amber-500 font-semibold hover:bg-amber-500 hover:text-white transition-all duration-300 rounded-full text-sm"
+                href={settings.rightSection.buttonLink}
+                className="inline-flex items-center gap-2 px-6 py-3 border-2 font-semibold hover:text-white transition-all duration-300 rounded-full text-sm"
+                style={{ 
+                  borderColor: settings.rightSection.buttonColor, 
+                  color: settings.rightSection.buttonColor 
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = settings.rightSection.buttonBgColor}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
-                Know more
+                {settings.rightSection.buttonText}
                 <span>›</span>
               </Link>
             </div>

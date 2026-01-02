@@ -9,6 +9,7 @@ import axios from "axios";
 
 const StoreSidebar = ({storeInfo, isAdmin}) => {
     const [showSettings, setShowSettings] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
     const pathname = usePathname()
 
     // Regular seller links
@@ -29,45 +30,46 @@ const StoreSidebar = ({storeInfo, isAdmin}) => {
     // Admin-only links
     const adminLinks = [
         { name: '👑 ADMIN SECTION', href: '#', icon: null, isHeader: true },
-        { name: 'Hero Banners', href: '/store/hero-banners', icon: HomeIcon },
-        { name: 'Homepage Sections', href: '/store/home-sections', icon: LayoutListIcon },
-        { name: 'Grid Products', href: '/store/grid-products', icon: LayoutListIcon },
+        { name: 'Home', href: '/store/home', icon: HomeIcon },
+        { name: 'Blog Articles', href: '/store/blogs', icon: LayoutListIcon },
+        { name: 'Menu Management', href: '/store/menu-management', icon: LayoutListIcon },
     ]
 
-    const sidebarLinks = isAdmin ? [...sellerLinks, ...adminLinks] : sellerLinks
+    // Combine links based on user role
+    const sidebarLinks = isAdmin ? [...sellerLinks, ...adminLinks] : sellerLinks;
 
     return (
-        <div className="inline-flex h-full flex-col justify-between border-r border-slate-200 sm:min-w-60">
-            <div>
-                <div className="flex flex-col gap-3 justify-center items-center pt-8 max-sm:hidden">
-                    <Image
+        <aside className={`${isOpen ? 'w-64' : 'w-20'} bg-white border-r border-slate-200 h-screen overflow-y-auto transition-all duration-300 ease-in-out max-sm:fixed max-sm:top-0 max-sm:left-0 max-sm:z-50 max-sm:shadow-2xl ${isOpen ? 'max-sm:w-64' : 'max-sm:w-0'}`}>
+            <div className="p-4 border-b border-slate-200 flex items-center gap-3 max-sm:justify-between">
+                <div className="flex items-center gap-3">
+                    {/* <Image
                         className="w-14 h-14 rounded-full shadow-md"
                         src={storeInfo?.logo && !storeInfo.logo.includes('placehold.co') ? storeInfo.logo : '/default-store-logo.png'}
                         alt={storeInfo?.name || 'Store Logo'}
                         width={80}
                         height={80}
-                    />
-                    <p className="text-slate-700">{storeInfo?.name || 'Store'}</p>
-                </div>
-                <div className="max-sm:mt-6">
-                    {
-                        sidebarLinks.map((link, index) => 
-                            link.isHeader ? (
-                                <div key={index} className="px-5 py-3 mt-4 text-xs font-semibold text-amber-600 border-t border-b border-amber-200 bg-amber-50 max-sm:hidden">
-                                    {link.name}
-                                </div>
-                            ) : (
-                                <Link key={index} href={link.href} className={`relative flex items-center gap-3 text-slate-500 hover:bg-slate-50 p-2.5 transition ${pathname === link.href && 'bg-slate-100 sm:text-slate-600'}`}>
-                                    {link.icon && <link.icon size={18} className="sm:ml-5" />}
-                                    <p className="max-sm:hidden">{link.name}</p>
-                                    {pathname === link.href && <span className="absolute bg-green-500 right-0 top-1.5 bottom-1.5 w-1 sm:w-1.5 rounded-l"></span>}
-                                </Link>
-                            )
-                        )
-                    }
+                    /> */}
+                    <p className="text-slate-700">{storeInfo?.name || 'Thessah.ae'}</p>
                 </div>
             </div>
-            <div className="mb-6 flex flex-col items-center">
+            <div className="max-sm:mt-6">
+                {
+                    sidebarLinks.map((link, index) => 
+                        link.isHeader ? (
+                            <div key={index} className="px-5 py-3 mt-4 text-xs font-semibold text-amber-600 border-t border-b border-amber-200 bg-amber-50 max-sm:hidden">
+                                {link.name}
+                            </div>
+                        ) : (
+                            <Link key={index} href={link.href} className={`relative flex items-center gap-3 text-slate-500 hover:bg-slate-50 p-2.5 transition ${pathname === link.href && 'bg-slate-100 sm:text-slate-600'}`}>
+                                {link.icon && <link.icon size={18} className="sm:ml-5" />}
+                                <p className="max-sm:hidden">{link.name}</p>
+                                {pathname === link.href && <span className="absolute bg-green-500 right-0 top-1.5 bottom-1.5 w-1 sm:w-1.5 rounded-l"></span>}
+                            </Link>
+                        )
+                    )
+                }
+            </div>
+            <div className="mt-auto p-4 border-t border-slate-200 flex flex-col items-center">
                 {/* Desktop: full button, Mobile: icon only */}
                 <button
                     className="w-44 px-4 py-2 bg-slate-200 text-slate-700 rounded hover:bg-blue-600 hover:text-white transition max-sm:hidden"
@@ -94,7 +96,7 @@ const StoreSidebar = ({storeInfo, isAdmin}) => {
                     </div>
                 </div>
             )}
-        </div>
+        </aside>
     )
 }
 

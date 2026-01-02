@@ -36,9 +36,13 @@ export async function POST(request) {
 
         // Firebase Auth: Extract token from Authorization header
         const authHeader = request.headers.get('authorization');
+        console.log('[CREATE PRODUCT] Auth header present:', !!authHeader);
+        
         let userId = null;
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const idToken = authHeader.split('Bearer ')[1];
+            console.log('[CREATE PRODUCT] Token extracted:', idToken.substring(0, 20) + '...');
+            
             const { getAuth } = await import('firebase-admin/auth');
             const { initializeApp, applicationDefault, getApps } = await import('firebase-admin/app');
             if (getApps().length === 0) {
@@ -47,12 +51,34 @@ export async function POST(request) {
             try {
                 const decodedToken = await getAuth().verifyIdToken(idToken);
                 userId = decodedToken.uid;
+                console.log('[CREATE PRODUCT] User ID from token:', userId);
             } catch (e) {
-                // Not signed in, userId remains null
+                console.error('[CREATE PRODUCT] Token verification failed:', e.message);
+                return NextResponse.json({ error: 'Invalid authentication token' }, { status: 401 });
             }
+        } else {
+            console.log('[CREATE PRODUCT] No valid authorization header');
+            return NextResponse.json({ error: 'Missing authorization token' }, { status: 401 });
         }
+        
         const storeId = await authSeller(userId);
-        if (!storeId) return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+        console.log('[CREATE PRODUCT] Store ID from authSeller:', storeId);
+        
+        if (!storeId) {
+            const { default: Store } = await import('@/models/Store');
+            const userStore = await Store.findOne({ userId }).lean();
+            
+            if (!userStore) {
+                return NextResponse.json({ error: "You don't have a store yet. Please create a store first." }, { status: 403 });
+            }
+            if (userStore.status === 'pending') {
+                return NextResponse.json({ error: "Your store is pending approval. Please wait for admin approval." }, { status: 403 });
+            }
+            if (userStore.status === 'rejected') {
+                return NextResponse.json({ error: "Your store was rejected. Contact support." }, { status: 403 });
+            }
+            return NextResponse.json({ error: "Not authorized" }, { status: 401 });
+        }
 
         const formData = await request.formData();
         const name = formData.get("name");

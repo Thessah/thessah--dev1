@@ -59,9 +59,6 @@ const StoreLayout = ({ children }) => {
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
             <h1 className="text-2xl sm:text-4xl font-semibold text-slate-400">Authentication Required</h1>
             <p className="text-slate-500 mt-4 mb-8">Please sign in to access the store dashboard</p>
-            <Link href="/store/login" className="bg-blue-600 text-white flex items-center gap-2 p-3 px-8 rounded-full hover:bg-blue-700 transition">
-                Sign In
-            </Link>
             <Link href="/" className="bg-slate-700 text-white flex items-center gap-2 mt-4 p-2 px-6 max-sm:text-sm rounded-full">
                 Go to home <ArrowRightIcon size={18} />
             </Link>

@@ -5,15 +5,27 @@ let _imagekit = null;
 
 export function ensureImageKit() {
     if (_imagekit) return _imagekit;
-    const { IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY, IMAGEKIT_URL_ENDPOINT } = process.env;
-    if (!IMAGEKIT_PUBLIC_KEY || !IMAGEKIT_PRIVATE_KEY || !IMAGEKIT_URL_ENDPOINT) {
-        throw new Error("ImageKit is not configured");
+    
+    const publicKey = process.env.IMAGEKIT_PUBLIC_KEY;
+    const privateKey = process.env.IMAGEKIT_PRIVATE_KEY;
+    const urlEndpoint = process.env.IMAGEKIT_URL_ENDPOINT;
+    
+    console.log('🔍 ImageKit config check:');
+    console.log('  Public Key:', publicKey ? '✓ Found' : '✗ Missing');
+    console.log('  Private Key:', privateKey ? '✓ Found' : '✗ Missing');
+    console.log('  URL Endpoint:', urlEndpoint ? `✓ ${urlEndpoint}` : '✗ Missing');
+    
+    if (!publicKey || !privateKey || !urlEndpoint) {
+        throw new Error("ImageKit is not configured - missing env variables");
     }
+    
     _imagekit = new ImageKit({
-        publicKey: IMAGEKIT_PUBLIC_KEY,
-        privateKey: IMAGEKIT_PRIVATE_KEY,
-        urlEndpoint: IMAGEKIT_URL_ENDPOINT,
+        publicKey: publicKey,
+        privateKey: privateKey,
+        urlEndpoint: urlEndpoint,
     });
+    
+    console.log('✅ ImageKit initialized successfully');
     return _imagekit;
 }
 

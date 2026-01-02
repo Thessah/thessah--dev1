@@ -36,11 +36,14 @@ export default function StoreCategoriesPage() {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await res.json();
-            if (data.categories) {
+            if (data.categories && Array.isArray(data.categories)) {
                 setCategories(data.categories);
+            } else {
+                setCategories([]);
             }
         } catch (error) {
             console.error('Error fetching categories:', error);
+            setCategories([]);
         } finally {
             setLoading(false);
         }
@@ -215,7 +218,7 @@ export default function StoreCategoriesPage() {
                                             <p className="text-sm text-gray-600">{parent.description}</p>
                                         )}
                                         <p className="text-xs text-gray-500 mt-1">
-                                            {parent.children.length} subcategories
+                                            {(parent.children || []).length} subcategories
                                         </p>
                                     </div>
                                 </div>
@@ -236,7 +239,7 @@ export default function StoreCategoriesPage() {
                             </div>
 
                             {/* Subcategories */}
-                            {parent.children.length > 0 && (
+                            {parent.children && parent.children.length > 0 && (
                                 <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                     {parent.children.map(child => (
                                         <div

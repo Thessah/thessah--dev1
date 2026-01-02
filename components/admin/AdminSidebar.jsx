@@ -2,9 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import { HomeIcon, ShieldCheckIcon, StoreIcon, TicketPercentIcon, TagsIcon, ImageIcon } from "lucide-react"
-import Image from "next/image"
 import Link from "next/link"
-import { assets } from "@/assets/assets"
 
 const AdminSidebar = () => {
 
@@ -18,17 +16,15 @@ const AdminSidebar = () => {
         { name: 'Coupons', href: '/admin/coupons', icon: TicketPercentIcon  },
         { name: 'Home Sections', href: '/admin/home-sections', icon: TagsIcon },
         { name: 'Hero Banner', href: '/admin/home-hero', icon: ImageIcon },
+        { name: 'Collections', href: '/admin/collections', icon: ImageIcon },
+        { name: 'Shop Categories', href: '/admin/shop-categories', icon: TagsIcon },
+        { name: 'Section 3', href: '/admin/section-3', icon: TagsIcon },
         { name: 'Grid Products', href: '/admin/grid-products', icon: TagsIcon },
         { name: 'Category Sections', href: '/admin/section4', icon: TagsIcon },
     ]
 
     return (
         <div className="inline-flex h-full flex-col gap-5 border-r border-slate-200 sm:min-w-60">
-            <div className="flex flex-col gap-3 justify-center items-center pt-8 max-sm:hidden">
-                <Image className="w-14 h-auto rounded-full" src={require("../../assets/Asset11.png")} alt="Admin Logo" width={80} height={80} />
-                <p className="text-slate-700">Admin</p>
-            </div>
-
             <div className="max-sm:mt-6">
                 {sidebarLinks.map((link, index) => (
                     <Link key={index} href={link.href} className={`relative flex items-center gap-3 text-slate-500 hover:bg-slate-50 p-2.5 transition ${pathname === link.href && 'bg-slate-100 sm:text-slate-600'}`}>

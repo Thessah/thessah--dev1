@@ -8,13 +8,18 @@ import Dummy from '../assets/ads.png';
 export default function TopDeals() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [heading, setHeading] = useState({
+    title: 'Top Deals',
+    subtitle: ''
+  })
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [{ data: sectionData }, { data: productData }] = await Promise.all([
+        const [{ data: sectionData }, { data: productData }, { data: settingsRes }] = await Promise.all([
           axios.get("/api/admin/home-sections"),
-          axios.get("/api/products")
+          axios.get("/api/products"),
+          axios.get("/api/store/settings")
         ]);
 
         const adminSections = sectionData.sections || [];
@@ -28,6 +33,10 @@ let result = allProducts;
         }
 
         setProducts(result);
+
+        if (settingsRes.settings?.section3Heading) {
+          setHeading(settingsRes.settings.section3Heading)
+        }
       } catch {
         setProducts([]);
       } finally {
@@ -43,7 +52,10 @@ let result = allProducts;
 
         {/* LEFT GRID PRODUCTS */}
         <div className="flex-1">
-          <h2 className="text-lg sm:text-[28px] font-semibold mb-3 sm:mb-5">Top Deals</h2>
+          <div className="mb-3 sm:mb-5">
+            <h2 className="text-lg sm:text-[28px] font-semibold">{heading.title}</h2>
+            {heading.subtitle && <p className="text-sm text-gray-600 mt-1">{heading.subtitle}</p>}
+          </div>
 
           {loading ? (
             <p className="text-gray-500 py-5 text-lg text-center">Loading...</p>

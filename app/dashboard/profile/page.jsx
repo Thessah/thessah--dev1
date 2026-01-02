@@ -8,8 +8,6 @@ import axios from 'axios'
 import Loading from '@/components/Loading'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
 import AddressModal from '@/components/AddressModal'
 import DashboardSidebar from '@/components/DashboardSidebar'
 
@@ -61,15 +59,12 @@ export default function DashboardProfilePage() {
           <p className="text-slate-600 mb-6">You need to sign in to view your profile.</p>
           <Link href="/" className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg">Go to Home</Link>
         </div>
-        <Footer />
       </>
     )
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-6">
         <DashboardSidebar />
 
         <main className="md:col-span-3">
@@ -106,9 +101,9 @@ export default function DashboardProfilePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 items-start">
                 {/* Edit-only section */}
-                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 h-fit">
                   <h2 className="text-lg font-semibold text-slate-800 mb-3">Edit Profile</h2>
                   <p className="text-slate-600 mb-4">Only editable fields appear below.</p>
                   {isEditing ? (
@@ -118,14 +113,26 @@ export default function DashboardProfilePage() {
                         e.preventDefault()
                         const formData = new FormData(e.currentTarget)
                         const displayName = formData.get('displayName')?.toString() || ''
+                        const email = formData.get('email')?.toString() || ''
+                        const phoneNumber = formData.get('phoneNumber')?.toString() || ''
                         const photoURL = formData.get('photoURL')?.toString() || user.photoURL || ''
+                        
                         try {
+                          // Update display name and photo
                           await updateProfile(auth.currentUser, { displayName, photoURL })
+                          
+                          // Update email and phone via API
+                          const token = await auth.currentUser.getIdToken()
+                          await axios.post('/api/user/update-profile', 
+                            { email, phoneNumber },
+                            { headers: { Authorization: `Bearer ${token}` } }
+                          )
+                          
                           toast.success('Profile updated')
-                          setUser({ ...user, displayName, photoURL })
+                          setUser({ ...user, displayName, photoURL, email, phoneNumber })
                           setIsEditing(false)
                         } catch (err) {
-                          toast.error(err?.message || 'Failed to update profile')
+                          toast.error(err?.response?.data?.error || err?.message || 'Failed to update profile')
                         }
                       }}
                     >
@@ -136,6 +143,25 @@ export default function DashboardProfilePage() {
                         className="border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
                         placeholder="Your name"
                       />
+                      
+                      <label className="text-sm text-slate-700 mt-2">Email Address</label>
+                      <input
+                        name="email"
+                        type="email"
+                        defaultValue={user.email || ''}
+                        className="border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        placeholder="your@email.com"
+                      />
+                      
+                      <label className="text-sm text-slate-700 mt-2">Phone Number</label>
+                      <input
+                        name="phoneNumber"
+                        type="tel"
+                        defaultValue={user.phoneNumber || ''}
+                        className="border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        placeholder="+91 98765 43210"
+                      />
+                      
                       <label className="text-sm text-slate-700 mt-2">Profile Photo</label>
                       <div className="flex items-center gap-3">
                         {user.photoURL && (
@@ -195,17 +221,17 @@ export default function DashboardProfilePage() {
                 </div>
 
                 {/* Saved addresses */}
-                <div id="addresses" className="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
-                  <div className="flex items-center justify-between">
+                <div id="addresses" className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 min-h-[200px]">
+                  <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold text-slate-800">Saved Addresses</h2>
                     <button onClick={() => { setAddrToEdit(null); setShowAddrModal(true) }} className="text-sm text-blue-600 hover:underline">Add New</button>
                   </div>
                   {addrLoading ? (
-                    <div className="mt-4"><Loading /></div>
+                    <div className="flex items-center justify-center h-32"><Loading /></div>
                   ) : addresses.length === 0 ? (
-                    <p className="text-slate-600 mt-3">No saved addresses yet.</p>
+                    <p className="text-slate-600 text-center py-4">No saved addresses yet.</p>
                   ) : (
-                    <ul className="mt-4 space-y-3">
+                    <ul className="space-y-3 max-h-[500px] overflow-y-auto">
                       {addresses.map((a) => (
                         <li key={a.id || a._id} className="border border-slate-200 rounded-lg p-3 text-sm text-slate-700">
                           <div className="flex items-start justify-between">
@@ -241,20 +267,19 @@ export default function DashboardProfilePage() {
                     </ul>
                   )}
                 </div>
-                <AddressModal
-                  open={showAddrModal}
-                  setShowAddressModal={setShowAddrModal}
-                  isEdit={!!addrToEdit}
-                  initialAddress={addrToEdit}
-                  onAddressAdded={(newAddr) => setAddresses([newAddr, ...addresses])}
-                  onAddressUpdated={(upd) => setAddresses(addresses.map((x) => (x.id === upd.id ? upd : x)))}
-                />
               </div>
+
+              <AddressModal
+                open={showAddrModal}
+                setShowAddressModal={setShowAddrModal}
+                isEdit={!!addrToEdit}
+                initialAddress={addrToEdit}
+                onAddressAdded={(newAddr) => setAddresses([newAddr, ...addresses])}
+                onAddressUpdated={(upd) => setAddresses(addresses.map((x) => (x.id === upd.id ? upd : x)))}
+              />
             </>
           )}
         </main>
       </div>
-      <Footer />
-    </>
-  )
+    )
 }

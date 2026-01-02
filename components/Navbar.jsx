@@ -45,6 +45,19 @@ const Navbar = () => {
 
   // State for categories
   const [categories, setCategories] = useState([]);
+  // State for navigation menu items
+  const [navMenuItems, setNavMenuItems] = useState([
+    { name: 'All Jewellery', link: '/shop', hasDropdown: false },
+    { name: 'Gold', link: '/shop?category=gold', hasDropdown: false },
+    { name: 'Diamond', link: '/shop?category=diamond', hasDropdown: false },
+    { name: 'Earrings', link: '/shop?category=earrings', hasDropdown: false },
+    { name: 'Rings', link: '/shop?category=rings', hasDropdown: false },
+    { name: 'Daily Wear', link: '/shop?category=daily-wear', hasDropdown: false },
+    { name: 'Collections', link: '/collections', hasDropdown: true },
+    { name: 'Wedding', link: '/shop?category=wedding', hasDropdown: false },
+    { name: 'Gifting', link: '/shop?category=gifting', hasDropdown: false },
+    { name: 'More', link: '#', hasDropdown: true }
+  ]);
   // State for animated search placeholder
   const [searchPlaceholder, setSearchPlaceholder] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
@@ -76,20 +89,32 @@ const Navbar = () => {
 
   // (already declared above)
 
-  // Fetch categories from API
+  // Fetch categories and navigation menu from API
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/categories');
-        const data = await res.json();
-        if (data.categories) {
-          setCategories(data.categories);
+        // Fetch categories
+        const catRes = await fetch('/api/categories');
+        const catData = await catRes.json();
+        if (catData.categories) {
+          setCategories(catData.categories);
+        }
+
+        // Fetch navigation menu
+        const settingsRes = await fetch('/api/store/settings');
+        const settingsData = await settingsRes.json();
+        if (settingsData.settings?.navMenuItems) {
+          setNavMenuItems(settingsData.settings.navMenuItems);
         }
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching data:', error);
       }
     };
-    fetchCategories();
+    fetchData();
+    
+    // Poll for updates every 30 seconds
+    const interval = setInterval(fetchData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   // Product names for animated placeholder
@@ -197,8 +222,19 @@ const Navbar = () => {
       });
       setWishlistCount(data.wishlist?.length || 0);
     } catch (error) {
-      console.error('Error fetching wishlist count:', error);
-      setWishlistCount(0);
+      // Silently handle auth errors (expected when not logged in)
+      if (error.response?.status === 401) {
+        // Try to get guest wishlist as fallback
+        try {
+          const guestWishlist = JSON.parse(localStorage.getItem('guestWishlist') || '[]');
+          setWishlistCount(Array.isArray(guestWishlist) ? guestWishlist.length : 0);
+        } catch {
+          setWishlistCount(0);
+        }
+      } else {
+        console.error('Error fetching wishlist count:', error);
+        setWishlistCount(0);
+      }
     }
   };
 
@@ -553,139 +589,113 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Bottom Navigation Bar - Jewelry Categories */}
+        {/* Bottom Navigation Bar - Dynamic from settings */}
         <div className="hidden lg:block border-t border-gray-200">
           <div className="flex items-center justify-center gap-8 py-3">
-            <Link href="/shop" className="text-sm font-medium text-gray-700 hover:text-red-600 transition flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              All Jewellery
-            </Link>
+            {navMenuItems.map((item, index) => {
+              const isCollections = item.hasDropdown && item.name.toLowerCase().includes('collection');
 
-            <Link href="/shop?category=gold" className="text-sm font-medium text-gray-700 hover:text-red-600 transition">
-              Gold
-            </Link>
+              if (isCollections) {
+                return (
+                  <div
+                    key={index}
+                    className="relative"
+                    onMouseEnter={() => {
+                      if (categoryTimer.current) clearTimeout(categoryTimer.current);
+                      setCategoriesDropdownOpen(true);
+                    }}
+                    onMouseLeave={() => {
+                      if (categoryTimer.current) clearTimeout(categoryTimer.current);
+                      categoryTimer.current = setTimeout(() => {
+                        setCategoriesDropdownOpen(false);
+                        setHoveredCategory(null);
+                      }, 200);
+                    }}
+                  >
+                    <button className="text-sm font-medium text-gray-700 hover:text-red-600 transition flex items-center gap-1">
+                      {item.name}
+                      <svg className={`w-4 h-4 transition-transform ${categoriesDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
 
-            <Link href="/shop?category=diamond" className="text-sm font-medium text-gray-700 hover:text-red-600 transition">
-              Diamond
-            </Link>
-
-            <Link href="/shop?category=earrings" className="text-sm font-medium text-gray-700 hover:text-red-600 transition">
-              Earrings
-            </Link>
-
-            <Link href="/shop?category=rings" className="text-sm font-medium text-gray-700 hover:text-red-600 transition">
-              Rings
-            </Link>
-
-            <Link href="/shop?category=daily-wear" className="text-sm font-medium text-gray-700 hover:text-red-600 transition">
-              Daily Wear
-            </Link>
-
-            {/* Collections Dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => {
-                if (categoryTimer.current) clearTimeout(categoryTimer.current);
-                setCategoriesDropdownOpen(true);
-              }}
-              onMouseLeave={() => {
-                if (categoryTimer.current) clearTimeout(categoryTimer.current);
-                categoryTimer.current = setTimeout(() => {
-                  setCategoriesDropdownOpen(false);
-                  setHoveredCategory(null);
-                }, 200);
-              }}
-            >
-              <button className="text-sm font-medium text-gray-700 hover:text-red-600 transition flex items-center gap-1">
-                Collections
-                <svg className={`w-4 h-4 transition-transform ${categoriesDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              {categoriesDropdownOpen && categories.length > 0 && (
-                <div className="absolute left-0 top-full mt-2 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden flex">
-                  {/* Main Categories */}
-                  <div className="w-64 bg-gray-50 border-r border-gray-200">
-                    {categories.filter(cat => !cat.parentId).map((category) => {
-                      const categorySlug = category.slug || category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-                      return (
-                        <div
-                          key={category._id}
-                          className="relative"
-                          onMouseEnter={() => setHoveredCategory(category._id)}
-                        >
-                          <Link
-                            href={`/shop?category=${categorySlug}`}
-                            className={`flex items-center justify-between px-4 py-3 hover:bg-red-50 transition ${
-                              hoveredCategory === category._id ? 'bg-red-50 text-red-600' : 'text-gray-700'
-                            }`}
-                            onClick={() => {
-                              setCategoriesDropdownOpen(false);
-                              setHoveredCategory(null);
-                            }}
-                          >
-                            <span className="font-medium">{category.name}</span>
-                            {category.children && category.children.length > 0 && (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                              </svg>
-                            )}
-                          </Link>
+                    {categoriesDropdownOpen && categories.length > 0 && (
+                      <div className="absolute left-0 top-full mt-2 bg-white rounded-lg shadow-2xl border border-gray-200 z-50 overflow-hidden flex">
+                        {/* Main Categories */}
+                        <div className="w-64 bg-gray-50 border-r border-gray-200">
+                          {categories.filter(cat => !cat.parentId).map((category) => {
+                            const categorySlug = category.slug || category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                            return (
+                              <div
+                                key={category._id}
+                                className="relative"
+                                onMouseEnter={() => setHoveredCategory(category._id)}
+                              >
+                                <Link
+                                  href={`/shop?category=${categorySlug}`}
+                                  className={`flex items-center justify-between px-4 py-3 hover:bg-red-50 transition ${
+                                    hoveredCategory === category._id ? 'bg-red-50 text-red-600' : 'text-gray-700'
+                                  }`}
+                                  onClick={() => {
+                                    setCategoriesDropdownOpen(false);
+                                    setHoveredCategory(null);
+                                  }}
+                                >
+                                  <span className="font-medium">{category.name}</span>
+                                  {category.children && category.children.length > 0 && (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  )}
+                                </Link>
+                              </div>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
+
+                        {/* Subcategories */}
+                        {hoveredCategory && (
+                          <div className="w-64 bg-white p-4">
+                            {categories
+                              .find(cat => cat._id === hoveredCategory)
+                              ?.children?.map((subcat) => {
+                                const subcatSlug = subcat.slug || subcat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                                return (
+                                  <Link
+                                    key={subcat._id}
+                                    href={`/shop?category=${subcatSlug}`}
+                                    className="block px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition"
+                                    onClick={() => {
+                                      setCategoriesDropdownOpen(false);
+                                      setHoveredCategory(null);
+                                    }}
+                                  >
+                                    {subcat.name}
+                                  </Link>
+                                );
+                              })}
+                            {(!categories.find(cat => cat._id === hoveredCategory)?.children?.length) && (
+                              <p className="text-sm text-gray-400 px-3 py-2">No subcategories</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
+                );
+              }
 
-                  {/* Subcategories */}
-                  {hoveredCategory && (
-                    <div className="w-64 bg-white p-4">
-                      {categories
-                        .find(cat => cat._id === hoveredCategory)
-                        ?.children?.map((subcat) => {
-                          const subcatSlug = subcat.slug || subcat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-                          return (
-                            <Link
-                              key={subcat._id}
-                              href={`/shop?category=${subcatSlug}`}
-                              className="block px-3 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition"
-                              onClick={() => {
-                                setCategoriesDropdownOpen(false);
-                                setHoveredCategory(null);
-                              }}
-                            >
-                              {subcat.name}
-                            </Link>
-                          );
-                        })}
-                      {(!categories.find(cat => cat._id === hoveredCategory)?.children?.length) && (
-                        <p className="text-sm text-gray-400 px-3 py-2">No subcategories</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            <Link href="/shop?category=wedding" className="text-sm font-medium text-gray-700 hover:text-red-600 transition">
-              Wedding
-            </Link>
-
-            <Link href="/shop?category=gifting" className="text-sm font-medium text-gray-700 hover:text-red-600 transition flex items-center gap-1.5">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-              </svg>
-              Gifting
-            </Link>
-
-            <button className="text-sm font-medium text-gray-700 hover:text-red-600 transition flex items-center gap-1">
-              More
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+  
+              return (
+                <Link
+                  key={index}
+                  href={item.link || '#'}
+                  className="text-sm font-medium text-gray-700 hover:text-red-600 transition"
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </div>
         </div>
 
