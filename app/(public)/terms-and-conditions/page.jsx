@@ -297,15 +297,6 @@ export default function TermsAndConditions() {
         (AML) laws. Customer information is used solely for order processing and customer 
         service. Customers purchasing gold or jewelry items may be required to provide 
         identification and proof of address as per AML/KYC requirements.
-      {/* 16 */}
-      <h2 className="text-xl font-semibold mt-6 mb-3">
-        16. Data Privacy & Anti-Money Laundering
-      </h2>
-      <p className="mb-4">
-        Thessah.ae complies with UAE data protection regulations and anti-money laundering 
-        (AML) laws. Customer information is used solely for order processing and customer 
-        service. Customers purchasing gold or jewelry items may be required to provide 
-        identification and proof of address as per AML/KYC requirements.
       </p>
 
       {/* 17 */}
