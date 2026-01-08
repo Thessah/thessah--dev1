@@ -130,7 +130,7 @@ export default function Hero() {
   return (
     <section className="relative w-full bg-white py-6 sm:py-8">
       {/* Carousel Container with Peek Effect */}
-      <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] overflow-hidden px-16">
+      <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] overflow-hidden px-4 sm:px-8">
         {/* Slides Track */}
         <div
           className="flex items-center h-full gap-4 ease-out cursor-grab active:cursor-grabbing"
