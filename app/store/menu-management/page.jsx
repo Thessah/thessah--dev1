@@ -11,8 +11,10 @@ export default function MenuManagement() {
   const [initialLoading, setInitialLoading] = useState(true)
   
   const [navMenuItems, setNavMenuItems] = useState([])
+  const [hasNavChanges, setHasNavChanges] = useState(false)
 
   const [footerSections, setFooterSections] = useState([])
+  const [hasFooterChanges, setHasFooterChanges] = useState(false)
 
   const [editingNavIndex, setEditingNavIndex] = useState(null)
   const [editingFooterSection, setEditingFooterSection] = useState(null)
@@ -22,9 +24,14 @@ export default function MenuManagement() {
   useEffect(() => {
     fetchData()
 
-    const interval = setInterval(fetchData, 30000) // keep admin view in sync
+    // Only auto-fetch if there are no unsaved changes
+    const interval = setInterval(() => {
+      if (!hasNavChanges && !hasFooterChanges) {
+        fetchData()
+      }
+    }, 30000) // keep admin view in sync
     return () => clearInterval(interval)
-  }, [])
+  }, [hasNavChanges, hasFooterChanges])
 
   const fetchData = async () => {
     try {
@@ -51,6 +58,7 @@ export default function MenuManagement() {
     const updated = [...navMenuItems]
     updated[index] = { ...updated[index], [field]: value }
     setNavMenuItems(updated)
+    setHasNavChanges(true)
   }
 
   const handleFooterLinkChange = (sectionIndex, linkIndex, field, value) => {
@@ -60,22 +68,26 @@ export default function MenuManagement() {
       [field]: value
     }
     setFooterSections(updated)
+    setHasFooterChanges(true)
   }
 
   const handleFooterSectionTitleChange = (sectionIndex, value) => {
     const updated = [...footerSections]
     updated[sectionIndex].title = value
     setFooterSections(updated)
+    setHasFooterChanges(true)
   }
 
   const addNavMenuItem = () => {
     setNavMenuItems([...navMenuItems, { name: 'New Item', link: '#', hasDropdown: false }])
+    setHasNavChanges(true)
     toast.success('New menu item added')
   }
 
   const deleteNavMenuItem = (index) => {
     const updated = navMenuItems.filter((_, i) => i !== index)
     setNavMenuItems(updated)
+    setHasNavChanges(true)
     toast.success('Menu item deleted')
   }
 
@@ -83,6 +95,7 @@ export default function MenuManagement() {
     const updated = [...footerSections]
     updated[sectionIndex].links.push({ name: 'New Link', link: '#', isPhone: false, isChat: false })
     setFooterSections(updated)
+    setHasFooterChanges(true)
     toast.success('New footer link added')
   }
 
@@ -90,18 +103,23 @@ export default function MenuManagement() {
     const updated = [...footerSections]
     updated[sectionIndex].links = updated[sectionIndex].links.filter((_, i) => i !== linkIndex)
     setFooterSections(updated)
+    setHasFooterChanges(true)
     toast.success('Footer link deleted')
   }
 
   const saveNavMenu = async () => {
     setLoading(true)
     try {
-      await axios.put('/api/store/settings', {
+      const response = await axios.put('/api/store/settings', {
         navMenuItems: navMenuItems
       })
       toast.success('Navigation menu updated')
       setEditingNavIndex(null)
-      fetchData()
+      setHasNavChanges(false)
+      // Update local state with returned data instead of refetching
+      if (response.data.settings?.navMenuItems) {
+        setNavMenuItems(response.data.settings.navMenuItems)
+      }
     } catch (error) {
       console.error('Save error:', error)
       toast.error('Failed to update menu')
@@ -113,13 +131,17 @@ export default function MenuManagement() {
   const saveFooterMenu = async () => {
     setLoading(true)
     try {
-      await axios.put('/api/store/settings', {
+      const response = await axios.put('/api/store/settings', {
         footerSections: footerSections
       })
       toast.success('Footer menu updated')
       setEditingFooterSection(null)
       setEditingFooterLinkIndex(null)
-      fetchData()
+      setHasFooterChanges(false)
+      // Update local state with returned data instead of refetching
+      if (response.data.settings?.footerSections) {
+        setFooterSections(response.data.settings.footerSections)
+      }
     } catch (error) {
       console.error('Save error:', error)
       toast.error('Failed to update footer')

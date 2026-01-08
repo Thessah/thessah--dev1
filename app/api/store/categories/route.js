@@ -127,14 +127,31 @@ export async function POST(req) {
         
         // Check if user has a store
         let isAuthorized = false;
+        let store = null;
         try {
             // Check if user has a store (any status)
-            const store = await Store.findOne({ userId }).lean();
+            store = await Store.findOne({ userId }).lean();
             if (store) {
                 isAuthorized = true;
                 console.log('✓ Store owner authorized:', userId, '- Status:', store.status);
             } else {
-                console.warn('⚠ No store found for user:', userId);
+                console.warn('⚠ No store found for user:', userId, '- Auto-creating default store');
+                // Auto-create a default store for single owner
+                try {
+                    store = await Store.create({
+                        userId,
+                        name: email?.split('@')[0] || 'Default Store',
+                        username: email?.split('@')[0]?.toLowerCase() || userId.substring(0, 8),
+                        description: 'My Store',
+                        email: email || '',
+                        status: 'approved',
+                        isActive: true,
+                    });
+                    isAuthorized = true;
+                    console.log('✓ Auto-created default store for user:', userId);
+                } catch (createError) {
+                    console.warn('⚠ Could not auto-create store:', createError.message);
+                }
             }
         } catch (authError) {
             console.warn('⚠ Authorization check failed:', authError.message);

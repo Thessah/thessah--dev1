@@ -1,13 +1,13 @@
 'use client'
 
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import axios from 'axios'
 
 export default function Hero() {
   const [slides, setSlides] = useState([])
+  const [loading, setLoading] = useState(true)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -23,23 +23,7 @@ export default function Hero() {
         console.log('🔄 Fetching banners from /api/store/hero-banners...');
         const res = await axios.get('/api/store/hero-banners')
         console.log('📦 Banners response:', res.data);
-        
-        // Default demo banner
-        const demoBanner = {
-          image: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=1920&h=620&fit=crop',
-          mobileImage: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=768&h=420&fit=crop',
-          badge: 'NEW COLLECTION',
-          subtitle: 'Discover Elegance',
-          title: 'Premium Jewelry',
-          description: 'Add your banners in the store dashboard',
-          cta: 'EXPLORE NOW',
-          link: '/shop',
-          showTitle: true,
-          showSubtitle: true,
-          showBadge: true,
-          showButton: true
-        }
-        
+
         if (res.data && res.data.banners && Array.isArray(res.data.banners)) {
           console.log('✅ Total banners in DB:', res.data.banners.length);
           // Filter only active banners
@@ -63,33 +47,20 @@ export default function Hero() {
               showButton: banner.showButton !== undefined ? banner.showButton : true
             }))
             console.log('✅ Slides loaded from DB:', dbSlides.length);
+            console.log('🖼️ Banner images:', dbSlides.map(s => s.image));
             setSlides(dbSlides)
+            setLoading(false)
             return
           }
         }
-        
-        // If no DB banners, use demo
-        console.log('⚠️ No DB banners found, using demo banner');
-        setSlides([demoBanner])
-        
+        console.log('⚠️ No DB banners found, clearing slides');
+        setSlides([])
+        setLoading(false)
+
       } catch (error) {
         console.error('❌ Error fetching banners:', error.message)
-        // Always show demo banner on error
-        console.log('⚠️ Using demo banner due to error');
-        setSlides([{
-          image: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=1920&h=620&fit=crop',
-          mobileImage: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=768&h=420&fit=crop',
-          badge: 'NEW COLLECTION',
-          subtitle: 'Discover Elegance',
-          title: 'Premium Jewelry',
-          description: 'Add your banners in the store dashboard',
-          cta: 'EXPLORE NOW',
-          link: '/shop',
-          showTitle: true,
-          showSubtitle: true,
-          showBadge: true,
-          showButton: true
-        }])
+        setSlides([])
+        setLoading(false)
       }
     }
     fetchBanners()
@@ -158,15 +129,29 @@ export default function Hero() {
   const infiniteSlides = [...slides.slice(-1), ...slides, ...slides.slice(0, 1)]
   const actualIndex = index + 1
 
-  // Don't render if no slides
+  // Show loading state while fetching
+  if (loading) {
+    return (
+      <section className="relative w-full bg-white py-6 sm:py-8">
+        <div className="relative h-[280px] sm:h-[350px] lg:h-[400px] overflow-hidden px-4 sm:px-8 bg-gray-100 flex items-center justify-center rounded-xl">
+          <div className="text-center text-gray-500">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+            <p className="text-sm">Loading banners...</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  // Don't render if no slides after loading
   if (slides.length === 0) {
     console.log('⚠️ NO SLIDES AVAILABLE - Hero banner will not render');
     return (
       <section className="relative w-full bg-white py-6 sm:py-8">
-        <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] overflow-hidden px-4 sm:px-8 bg-gray-200 flex items-center justify-center rounded-xl">
+        <div className="relative h-[280px] sm:h-[350px] lg:h-[400px] overflow-hidden px-4 sm:px-8 bg-gray-200 flex items-center justify-center rounded-xl">
           <div className="text-center text-gray-600">
             <p className="text-lg font-semibold">No banners available</p>
-            <p className="text-sm">Go to /store/hero-banners to create one</p>
+            <p className="text-sm">Loading .....</p>
           </div>
         </div>
       </section>
@@ -174,15 +159,15 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative w-full bg-white py-6 sm:py-8">
-      {/* Carousel Container with Gap */}
-      <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] overflow-hidden px-4 sm:px-8">
+    <section className="relative w-full bg-white py-4 sm:py-6">
+      {/* Carousel Container */}
+      <div className="relative h-[290px] sm:h-[360px] lg:h-[410px] overflow-hidden px-4 sm:px-8">
         {/* Slides Track */}
         <div
-          className="flex items-center gap-4 sm:gap-6 lg:gap-8 w-full ease-out cursor-grab active:cursor-grabbing"
+          className="flex gap-4 h-full w-full cursor-grab active:cursor-grabbing"
           style={{
-            transform: `translateX(calc(-${actualIndex * 100}% - ${actualIndex * (actualIndex > 0 ? 24 : 0)}px + ${currentTranslate}px))`,
-            transition: isDragging || !isTransitioning ? 'none' : 'transform 700ms'
+            transform: `translateX(calc(-${actualIndex * 100}% - ${actualIndex * 16}px))`,
+            transition: isDragging || !isTransitioning ? 'none' : 'transform 800ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}
           onMouseDown={handleDragStart}
           onMouseMove={handleDragMove}
@@ -195,18 +180,16 @@ export default function Hero() {
           {infiniteSlides.map((slide, i) => (
             <div
               key={i}
-              className="flex-shrink-0 w-full"
+              className="flex-shrink-0 w-full h-full"
             >
               {/* Main Slide Container - Full Width, No Crop */}
               <div 
                 className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('${slide.image}')`
+                  backgroundImage: slide.image ? `url('${slide.image}')` : 'none',
+                  backgroundColor: slide.image ? 'transparent' : '#e5e7eb'
                 }}
               >
-
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-transparent" />
 
                 {/* Content */}
                 <div className="absolute inset-0 flex items-center">

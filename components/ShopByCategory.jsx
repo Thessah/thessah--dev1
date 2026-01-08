@@ -69,7 +69,7 @@ export default function ShopByCategory() {
     return () => clearInterval(interval)
   }, [])
   return (
-    <section className="w-full bg-white py-12 sm:py-16 lg:py-20">
+    <section className="w-full bg-white py-8 sm:py-10 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-10 sm:mb-12">

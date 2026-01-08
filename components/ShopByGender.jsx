@@ -15,8 +15,8 @@ export default function ShopByGender() {
 
   useEffect(() => {
     fetchData()
-    const interval = setInterval(fetchData, 10000) // Refresh every 10 seconds
-    return () => clearInterval(interval)
+    // Removed polling to avoid flicker; component updates on save/refresh
+    return () => {}
   }, [])
 
   const fetchData = async () => {
@@ -35,8 +35,14 @@ export default function ShopByGender() {
       // Load gender categories
       if (settingsRes.data.settings?.section5GenderCategories) {
         const dbCategories = settingsRes.data.settings.section5GenderCategories
-        // Filter out empty categories (must have at least title and image)
-        const validCategories = dbCategories.filter(cat => cat.title && cat.image)
+        // Be permissive: accept items with at least a title or image
+        const validCategories = (Array.isArray(dbCategories) ? dbCategories : [])
+          .filter(cat => cat && (cat.title || cat.image))
+          .map(cat => ({
+            title: cat.title || '',
+            image: cat.image || '',
+            link: cat.link || '#'
+          }))
         setGenderCategories(validCategories)
       }
 
@@ -52,7 +58,7 @@ export default function ShopByGender() {
   }
 
   return (
-    <section className="w-full bg-white py-12 sm:py-16 lg:py-20">
+    <section className="w-full bg-white py-8 sm:py-10 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-10 sm:mb-12">

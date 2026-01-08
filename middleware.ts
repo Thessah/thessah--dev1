@@ -15,6 +15,9 @@ const publicEndpoints = [
   '/api/store/categories', // Allow GET requests to view categories
   '/api/store/shop-categories', // Allow GET shop categories with images
   '/api/store/hero-banners', // Allow GET hero banners (used by Hero component)
+  '/api/store/home-sections', // Allow GET home sections (used on public pages)
+  '/api/store/grid-products', // Allow GET grid products
+  '/api/store/section4', // Allow GET section4 collections
   '/api/store/upload-banner', // Allow image uploads
   '/api/store/collections', // Allow GET collections (used by CollectionsShowcase)
   '/api/store/collections/upload', // Allow image uploads for collections

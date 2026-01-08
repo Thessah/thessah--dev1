@@ -46,18 +46,7 @@ const Navbar = () => {
   // State for categories
   const [categories, setCategories] = useState([]);
   // State for navigation menu items
-  const [navMenuItems, setNavMenuItems] = useState([
-    { name: 'All Jewellery', link: '/shop', hasDropdown: false },
-    { name: 'Gold', link: '/shop?category=gold', hasDropdown: false },
-    { name: 'Diamond', link: '/shop?category=diamond', hasDropdown: false },
-    { name: 'Earrings', link: '/shop?category=earrings', hasDropdown: false },
-    { name: 'Rings', link: '/shop?category=rings', hasDropdown: false },
-    { name: 'Daily Wear', link: '/shop?category=daily-wear', hasDropdown: false },
-    { name: 'Collections', link: '/collections', hasDropdown: true },
-    { name: 'Wedding', link: '/shop?category=wedding', hasDropdown: false },
-    { name: 'Gifting', link: '/shop?category=gifting', hasDropdown: false },
-    { name: 'More', link: '#', hasDropdown: true }
-  ]);
+  const [navMenuItems, setNavMenuItems] = useState([]);
   // State for animated search placeholder
   const [searchPlaceholder, setSearchPlaceholder] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);

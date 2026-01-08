@@ -6,15 +6,16 @@ import toast from 'react-hot-toast'
 import PageTitle from '@/components/PageTitle'
 
 export default function Section5Settings() {
+  const DEFAULT_GENDER_CATEGORIES = [
+    { title: '', image: '', link: '' },
+    { title: '', image: '', link: '' },
+    { title: '', image: '', link: '' }
+  ]
   const [heading, setHeading] = useState({
     title: 'Curated For You',
     subtitle: 'Shop By Gender'
   })
-  const [genderCategories, setGenderCategories] = useState([
-    { title: '', image: '', link: '' },
-    { title: '', image: '', link: '' },
-    { title: '', image: '', link: '' }
-  ])
+  const [genderCategories, setGenderCategories] = useState(DEFAULT_GENDER_CATEGORIES)
   const [editingHeading, setEditingHeading] = useState(false)
   const [editingCategories, setEditingCategories] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -34,9 +35,12 @@ export default function Section5Settings() {
         setHeading(settingsRes.data.settings.section5Heading)
       }
 
-      // Load gender categories
-      if (settingsRes.data.settings?.section5GenderCategories) {
-        setGenderCategories(settingsRes.data.settings.section5GenderCategories)
+      // Load gender categories with fallback when empty
+      const cats = settingsRes.data.settings?.section5GenderCategories
+      if (Array.isArray(cats) && cats.length > 0) {
+        setGenderCategories(cats)
+      } else {
+        setGenderCategories(DEFAULT_GENDER_CATEGORIES)
       }
     } catch (error) {
       console.error('Fetch error:', error)
@@ -53,6 +57,10 @@ export default function Section5Settings() {
       if (data.success) {
         toast.success('Section 5 heading updated!')
         setEditingHeading(false)
+        // Sync local state from server response to avoid stale refetch
+        if (data.settings?.section5Heading) {
+          setHeading(data.settings.section5Heading)
+        }
       }
     } catch (error) {
       console.error('Error saving heading:', error)
@@ -100,7 +108,10 @@ export default function Section5Settings() {
       console.log('✅ Save response:', response.data)
       toast.success('Gender categories updated')
       setEditingCategories(false)
-      fetchData()
+      // Sync local state without immediate refetch to avoid race conditions
+      if (response.data.settings?.section5GenderCategories) {
+        setGenderCategories(response.data.settings.section5GenderCategories)
+      }
     } catch (error) {
       console.error('Error saving gender categories:', error)
       toast.error('Failed to save gender categories')

@@ -40,7 +40,16 @@ let cachedSettings = {
   shopCategoriesDisplay: {
     selectedIds: [],
     order: []
-  }
+  },
+  // Section 5 defaults (Shop By Gender)
+  section5Heading: {
+    title: 'Curated For You',
+    subtitle: 'Shop By Gender',
+  },
+  section5GenderCategories: [
+    // Admin can override; start empty so UI can populate
+  ],
+  footerSections: []
 };
 
 console.log('✓ Settings API loaded');

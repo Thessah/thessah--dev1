@@ -15,8 +15,8 @@ export default function TanishqWorld() {
 
   useEffect(() => {
     fetchData()
-    const interval = setInterval(fetchData, 10000) // Refresh every 10 seconds
-    return () => clearInterval(interval)
+    // Removed polling to avoid flicker; component updates on save/refresh
+    return () => {}
   }, [])
 
   const fetchData = async () => {
@@ -37,9 +37,15 @@ export default function TanishqWorld() {
       if (settingsRes.data.settings?.section4Collections) {
         const dbCollections = settingsRes.data.settings.section4Collections
         console.log('📦 Collections from DB:', dbCollections)
-        // Filter out empty collections (must have at least title and image)
-        const validCollections = dbCollections.filter(col => col.title && col.image)
-        console.log('✅ Valid collections:', validCollections)
+        // Be permissive: keep items that have at least a title or image
+        const validCollections = (Array.isArray(dbCollections) ? dbCollections : [])
+          .filter(col => col && (col.title || col.image))
+          .map(col => ({
+            title: col.title || '',
+            image: col.image || '',
+            link: col.link || '#'
+          }))
+        console.log('✅ Collections to render:', validCollections)
         setCollections(validCollections)
       } else {
         console.log('❌ No section4Collections in settings')
@@ -60,7 +66,7 @@ export default function TanishqWorld() {
   }
 
   return (
-    <section className="w-full bg-white py-12 sm:py-16 lg:py-20">
+    <section className="w-full bg-white py-8 sm:py-10 lg:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-10 sm:mb-12">
@@ -73,8 +79,12 @@ export default function TanishqWorld() {
         </div>
 
         {/* Grid Layout - 2x2 */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          {collections.map((collection, index) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {collections.length === 0 ? (
+              <div className="col-span-1 sm:col-span-2 text-center text-gray-500">
+                No collections configured yet.
+              </div>
+            ) : collections.map((collection, index) => (
             <Link
               key={index}
               href={collection.link || '#'}
@@ -90,7 +100,8 @@ export default function TanishqWorld() {
               )}
               
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                {/* Removed gradient overlay for full-bright image */}
+                {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" /> */}
               
               {/* Title */}
               <div className="absolute inset-0 flex items-center justify-center">
