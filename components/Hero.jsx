@@ -129,11 +129,11 @@ export default function Hero() {
 
   return (
     <section className="relative w-full bg-white py-6 sm:py-8">
-      {/* Carousel Container with Peek Effect */}
-      <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] overflow-hidden px-4 sm:px-8">
+      {/* Carousel Container - Full Width, Auto Height */}
+      <div className="relative w-full overflow-hidden">
         {/* Slides Track */}
         <div
-          className="flex items-center h-full gap-4 ease-out cursor-grab active:cursor-grabbing"
+          className="flex items-center w-full ease-out cursor-grab active:cursor-grabbing"
           style={{
             transform: `translateX(calc(-${actualIndex * 100}% - ${actualIndex * 16}px + ${currentTranslate}px))`,
             transition: isDragging || !isTransitioning ? 'none' : 'transform 700ms'
@@ -149,11 +149,10 @@ export default function Hero() {
           {infiniteSlides.map((slide, i) => (
             <div
               key={i}
-              className="flex-shrink-0 h-full"
-              style={{ width: '100%' }}
+              className="flex-shrink-0 w-full"
             >
-              {/* Main Slide Container - Full View with Rounded Corners */}
-              <div className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl">
+              {/* Main Slide Container - Full Width, Auto Height */}
+              <div className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl aspect-video">
                 {/* Background image - Fills space */}
                 {/* Desktop image - hidden on mobile */}
                 <Image
@@ -162,7 +161,7 @@ export default function Hero() {
                   fill
                   priority={i === 0}
                   className="object-cover hidden sm:block"
-                  sizes="(max-width: 768px) 0vw, 85vw"
+                  sizes="100vw"
                 />
                 {/* Mobile image - shown on mobile only */}
                 <Image
