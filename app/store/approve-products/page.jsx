@@ -12,35 +12,3 @@ export default function ApproveProductsPage() {
     </div>
   )
 }
-                <span className="font-medium">Price: ₹{product.price}</span>
-                <span>Category: {product.category}</span>
-                <span>Stock: {product.stock}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={() => handleApprove(product._id)}
-                className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => handleReject(product._id)}
-                className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-              >
-                Reject
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {products.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          No pending products for approval
-        </div>
-      )}
-    </div>
-  )
-}
