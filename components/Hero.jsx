@@ -165,35 +165,39 @@ export default function Hero() {
                 {/* Content */}
                 <div className="absolute inset-0 flex items-center">
                   <div className="px-6 sm:px-12 lg:px-20 max-w-2xl text-white">
-                    {slide.badge && (
+                    {slide.badge && slide.badge.trim() && (
                       <span className="inline-block mb-4 px-4 py-1.5 border border-white/60 rounded-full text-xs tracking-wide bg-white/10 backdrop-blur">
                         {slide.badge}
                       </span>
                     )}
 
-                    {slide.subtitle && (
+                    {slide.subtitle && slide.subtitle.trim() && (
                       <p className="text-sm sm:text-lg mb-2 tracking-wide text-white/90">
                         {slide.subtitle}
                       </p>
                     )}
 
-                    <h1 className="text-3xl sm:text-4xl lg:text-6xl font-serif font-bold mb-4 drop-shadow-2xl">
-                      {slide.title}
-                    </h1>
+                    {slide.title && slide.title.trim() && (
+                      <h1 className="text-3xl sm:text-4xl lg:text-6xl font-serif font-bold mb-4 drop-shadow-2xl">
+                        {slide.title}
+                      </h1>
+                    )}
 
-                    {slide.description && (
+                    {slide.description && slide.description.trim() && (
                       <p className="text-sm sm:text-base lg:text-lg text-white/85 mb-6 max-w-xl">
                         {slide.description}
                       </p>
                     )}
 
-                    <Link
-                      href={slide.link}
-                      onClick={() => setPaused(true)}
-                      className="inline-block bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-3 text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105 shadow-xl rounded"
-                    >
-                      {slide.cta}
-                    </Link>
+                    {slide.cta && slide.cta.trim() && slide.link && (
+                      <Link
+                        href={slide.link}
+                        onClick={() => setPaused(true)}
+                        className="inline-block bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-8 py-3 text-xs sm:text-sm font-semibold tracking-widest uppercase transition-all duration-300 hover:scale-105 shadow-xl rounded"
+                      >
+                        {slide.cta}
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
