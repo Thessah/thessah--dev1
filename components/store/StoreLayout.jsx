@@ -22,23 +22,33 @@ const StoreLayout = ({ children }) => {
     const fetchIsSeller = async () => {
         if (!user) return;
         try {
+            // Only allow access to thessahjewellery@gmail.com
+            const allowedEmail = 'thessahjewellery@gmail.com';
+            const isAuthorized = user.email === allowedEmail;
+            
+            if (!isAuthorized) {
+                console.log('[StoreLayout] Unauthorized email:', user.email);
+                setIsSeller(false);
+                setIsAdmin(false);
+                setSellerLoading(false);
+                return;
+            }
+            
             const token = await getToken(true); // Force refresh token
             if (!token) {
                 console.log('[StoreLayout] No token available');
                 setSellerLoading(false);
                 return;
             }
-            console.log('[StoreLayout] Checking seller status with fresh token');
+            
+            console.log('[StoreLayout] Authorized email - checking store status');
             const { data } = await axios.get('/api/store/is-seller', { 
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log('[StoreLayout] /api/store/is-seller response:', data);
             setIsSeller(data.isSeller);
             setStoreInfo(data.storeInfo);
-            
-            // Check if user is admin
-            const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').replace(/['\"]/g, '').split(',');
-            setIsAdmin(user && adminEmails.includes(user.email));
+            setIsAdmin(true); // This email is the admin
         } catch (error) {
             console.log('[StoreLayout] is-seller error:', error?.response?.data || error.message);
             setIsSeller(false);
@@ -75,11 +85,8 @@ const StoreLayout = ({ children }) => {
         </div>
     ) : (
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
-            <h1 className="text-2xl sm:text-4xl font-semibold text-slate-400">You are not authorized to access this page</h1>
-            <p className="text-slate-500 mt-4 mb-6">Your account does not have seller access</p>
-            <Link href="/create-store" className="bg-blue-600 text-white flex items-center gap-2 p-2 px-6 max-sm:text-sm rounded-full hover:bg-blue-700 transition">
-                Request Store Access
-            </Link>
+            <h1 className="text-2xl sm:text-4xl font-semibold text-slate-400">Access Restricted</h1>
+            <p className="text-slate-500 mt-4 mb-6">This dashboard is only accessible to the store owner (thessahjewellery@gmail.com)</p>
             <Link href="/" className="bg-slate-700 text-white flex items-center gap-2 mt-4 p-2 px-6 max-sm:text-sm rounded-full">
                 Go to home <ArrowRightIcon size={18} />
             </Link>
