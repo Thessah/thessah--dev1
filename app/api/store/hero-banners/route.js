@@ -45,8 +45,13 @@ export async function POST(req) {
       cta: body.cta || 'SHOP NOW',
       link: body.link || '/shop',
       image: body.image || '',
+      mobileImage: body.mobileImage || '',
       order: body.order || 0,
       isActive: body.isActive !== undefined ? body.isActive : true,
+      showTitle: body.showTitle !== undefined ? body.showTitle : true,
+      showSubtitle: body.showSubtitle !== undefined ? body.showSubtitle : true,
+      showBadge: body.showBadge !== undefined ? body.showBadge : true,
+      showButton: body.showButton !== undefined ? body.showButton : true,
       createdAt: new Date(),
       updatedAt: new Date()
     };

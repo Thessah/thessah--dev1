@@ -20,14 +20,31 @@ export default function Hero() {
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        console.log('Fetching banners from /api/store/hero-banners...');
+        console.log('🔄 Fetching banners from /api/store/hero-banners...');
         const res = await axios.get('/api/store/hero-banners')
-        console.log('Banners response:', res.data);
+        console.log('📦 Banners response:', res.data);
         
-        if (res.data.banners && res.data.banners.length > 0) {
+        // Default demo banner
+        const demoBanner = {
+          image: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=1920&h=620&fit=crop',
+          mobileImage: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=768&h=420&fit=crop',
+          badge: 'NEW COLLECTION',
+          subtitle: 'Discover Elegance',
+          title: 'Premium Jewelry',
+          description: 'Add your banners in the store dashboard',
+          cta: 'EXPLORE NOW',
+          link: '/shop',
+          showTitle: true,
+          showSubtitle: true,
+          showBadge: true,
+          showButton: true
+        }
+        
+        if (res.data && res.data.banners && Array.isArray(res.data.banners)) {
+          console.log('✅ Total banners in DB:', res.data.banners.length);
           // Filter only active banners
           const activeBanners = res.data.banners.filter(b => b.isActive !== false)
-          console.log('Active banners:', activeBanners.length);
+          console.log('✅ Active banners:', activeBanners.length);
           
           if (activeBanners.length > 0) {
             // Convert database banners to slides format
@@ -45,15 +62,34 @@ export default function Hero() {
               showBadge: banner.showBadge !== undefined ? banner.showBadge : true,
               showButton: banner.showButton !== undefined ? banner.showButton : true
             }))
-            console.log('Slides loaded:', dbSlides.length);
+            console.log('✅ Slides loaded from DB:', dbSlides.length);
             setSlides(dbSlides)
+            return
           }
-        } else {
-          console.log('No banners found, slides will be empty');
         }
+        
+        // If no DB banners, use demo
+        console.log('⚠️ No DB banners found, using demo banner');
+        setSlides([demoBanner])
+        
       } catch (error) {
-        console.error('Error fetching banners:', error)
-        // If no banners available, slides will remain empty
+        console.error('❌ Error fetching banners:', error.message)
+        // Always show demo banner on error
+        console.log('⚠️ Using demo banner due to error');
+        setSlides([{
+          image: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=1920&h=620&fit=crop',
+          mobileImage: 'https://images.pexels.com/photos/1707820/pexels-photo-1707820.jpeg?w=768&h=420&fit=crop',
+          badge: 'NEW COLLECTION',
+          subtitle: 'Discover Elegance',
+          title: 'Premium Jewelry',
+          description: 'Add your banners in the store dashboard',
+          cta: 'EXPLORE NOW',
+          link: '/shop',
+          showTitle: true,
+          showSubtitle: true,
+          showBadge: true,
+          showButton: true
+        }])
       }
     }
     fetchBanners()
@@ -124,18 +160,28 @@ export default function Hero() {
 
   // Don't render if no slides
   if (slides.length === 0) {
-    return null
+    console.log('⚠️ NO SLIDES AVAILABLE - Hero banner will not render');
+    return (
+      <section className="relative w-full bg-white py-6 sm:py-8">
+        <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] overflow-hidden px-4 sm:px-8 bg-gray-200 flex items-center justify-center rounded-xl">
+          <div className="text-center text-gray-600">
+            <p className="text-lg font-semibold">No banners available</p>
+            <p className="text-sm">Go to /store/hero-banners to create one</p>
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (
     <section className="relative w-full bg-white py-6 sm:py-8">
-      {/* Carousel Container - Full Width, Auto Height */}
-      <div className="relative w-full overflow-hidden">
+      {/* Carousel Container with Gap */}
+      <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] overflow-hidden px-4 sm:px-8">
         {/* Slides Track */}
         <div
-          className="flex items-center w-full ease-out cursor-grab active:cursor-grabbing"
+          className="flex items-center gap-4 sm:gap-6 lg:gap-8 w-full ease-out cursor-grab active:cursor-grabbing"
           style={{
-            transform: `translateX(calc(-${actualIndex * 100}% - ${actualIndex * 16}px + ${currentTranslate}px))`,
+            transform: `translateX(calc(-${actualIndex * 100}% - ${actualIndex * (actualIndex > 0 ? 24 : 0)}px + ${currentTranslate}px))`,
             transition: isDragging || !isTransitioning ? 'none' : 'transform 700ms'
           }}
           onMouseDown={handleDragStart}
@@ -151,27 +197,13 @@ export default function Hero() {
               key={i}
               className="flex-shrink-0 w-full"
             >
-              {/* Main Slide Container - Full Width, Auto Height */}
-              <div className="relative w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl aspect-video">
-                {/* Background image - Fills space */}
-                {/* Desktop image - hidden on mobile */}
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill
-                  priority={i === 0}
-                  className="object-cover hidden sm:block"
-                  sizes="100vw"
-                />
-                {/* Mobile image - shown on mobile only */}
-                <Image
-                  src={slide.mobileImage}
-                  alt={slide.title}
-                  fill
-                  priority={i === 0}
-                  className="object-cover sm:hidden"
-                  sizes="(max-width: 768px) 92vw, 0vw"
-                />
+              {/* Main Slide Container - Full Width, No Crop */}
+              <div 
+                className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl bg-cover bg-center"
+                style={{
+                  backgroundImage: `url('${slide.image}')`
+                }}
+              >
 
                 {/* Gradient overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-transparent" />
