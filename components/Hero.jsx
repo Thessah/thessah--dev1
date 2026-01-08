@@ -37,8 +37,12 @@ export default function Hero() {
               subtitle: banner.subtitle || '',
               title: banner.title || '',
               description: banner.description || '',
-              cta: banner.cta || 'SHOP NOW',
-              link: banner.link || '/shop'
+              cta: banner.cta || '',
+              link: banner.link || '/shop',
+              showTitle: banner.showTitle !== undefined ? banner.showTitle : true,
+              showSubtitle: banner.showSubtitle !== undefined ? banner.showSubtitle : true,
+              showBadge: banner.showBadge !== undefined ? banner.showBadge : true,
+              showButton: banner.showButton !== undefined ? banner.showButton : true
             }))
             console.log('Slides loaded:', dbSlides.length);
             setSlides(dbSlides)
@@ -165,19 +169,19 @@ export default function Hero() {
                 {/* Content */}
                 <div className="absolute inset-0 flex items-center">
                   <div className="px-6 sm:px-12 lg:px-20 max-w-2xl text-white">
-                    {slide.badge && slide.badge.trim() && (
+                    {slide.showBadge && slide.badge && slide.badge.trim() && (
                       <span className="inline-block mb-4 px-4 py-1.5 border border-white/60 rounded-full text-xs tracking-wide bg-white/10 backdrop-blur">
                         {slide.badge}
                       </span>
                     )}
 
-                    {slide.subtitle && slide.subtitle.trim() && (
+                    {slide.showSubtitle && slide.subtitle && slide.subtitle.trim() && (
                       <p className="text-sm sm:text-lg mb-2 tracking-wide text-white/90">
                         {slide.subtitle}
                       </p>
                     )}
 
-                    {slide.title && slide.title.trim() && (
+                    {slide.showTitle && slide.title && slide.title.trim() && (
                       <h1 className="text-3xl sm:text-4xl lg:text-6xl font-serif font-bold mb-4 drop-shadow-2xl">
                         {slide.title}
                       </h1>
@@ -189,7 +193,7 @@ export default function Hero() {
                       </p>
                     )}
 
-                    {slide.cta && slide.cta.trim() && slide.link && (
+                    {slide.showButton && slide.cta && slide.cta.trim() && slide.link && (
                       <Link
                         href={slide.link}
                         onClick={() => setPaused(true)}

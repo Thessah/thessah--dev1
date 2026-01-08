@@ -18,10 +18,14 @@ export default function StoreHeroBannersPage() {
     subtitle: '',
     title: '',
     description: '',
-    cta: 'SHOP NOW',
+    cta: '',
     link: '/shop',
     image: '',
-    isActive: true
+    isActive: true,
+    showTitle: true,
+    showSubtitle: true,
+    showBadge: true,
+    showButton: true
   })
 
   // Fetch banners on component mount
@@ -142,10 +146,14 @@ export default function StoreHeroBannersPage() {
       subtitle: banner.subtitle || '',
       title: banner.title || '',
       description: banner.description || '',
-      cta: banner.cta || 'SHOP NOW',
+      cta: banner.cta || '',
       link: banner.link || '/shop',
       image: banner.image || '',
-      isActive: banner.isActive !== undefined ? banner.isActive : true
+      isActive: banner.isActive !== undefined ? banner.isActive : true,
+      showTitle: banner.showTitle !== undefined ? banner.showTitle : true,
+      showSubtitle: banner.showSubtitle !== undefined ? banner.showSubtitle : true,
+      showBadge: banner.showBadge !== undefined ? banner.showBadge : true,
+      showButton: banner.showButton !== undefined ? banner.showButton : true
     })
     setShowForm(true)
   }
@@ -183,10 +191,14 @@ export default function StoreHeroBannersPage() {
       subtitle: '',
       title: '',
       description: '',
-      cta: 'SHOP NOW',
+      cta: '',
       link: '/shop',
       image: '',
-      isActive: true
+      isActive: true,
+      showTitle: true,
+      showSubtitle: true,
+      showBadge: true,
+      showButton: true
     })
     setEditingBanner(null)
     setShowForm(false)
@@ -285,7 +297,7 @@ export default function StoreHeroBannersPage() {
               {/* CTA Button */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Button Text
+                  Button Text <span className="text-xs text-gray-500">(leave empty to hide)</span>
                 </label>
                 <input
                   type="text"
@@ -293,7 +305,7 @@ export default function StoreHeroBannersPage() {
                   value={formData.cta}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="SHOP NOW"
+                  placeholder="SHOP NOW (optional)"
                 />
               </div>
 
@@ -360,6 +372,57 @@ export default function StoreHeroBannersPage() {
                       />
                     </div>
                   )}
+                </div>
+              </div>
+            </div>
+
+            {/* Display Toggles */}
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-700 mb-3">Show/Hide Elements</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="showTitle"
+                    name="showTitle"
+                    checked={formData.showTitle}
+                    onChange={handleInputChange}
+                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <label htmlFor="showTitle" className="text-sm text-gray-700">Show Title</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="showSubtitle"
+                    name="showSubtitle"
+                    checked={formData.showSubtitle}
+                    onChange={handleInputChange}
+                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <label htmlFor="showSubtitle" className="text-sm text-gray-700">Show Subtitle</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="showBadge"
+                    name="showBadge"
+                    checked={formData.showBadge}
+                    onChange={handleInputChange}
+                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <label htmlFor="showBadge" className="text-sm text-gray-700">Show Badge</label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="showButton"
+                    name="showButton"
+                    checked={formData.showButton}
+                    onChange={handleInputChange}
+                    className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  />
+                  <label htmlFor="showButton" className="text-sm text-gray-700">Show Button</label>
                 </div>
               </div>
             </div>
