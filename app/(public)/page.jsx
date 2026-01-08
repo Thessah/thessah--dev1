@@ -34,9 +34,9 @@ export default function Home() {
         const fetchData = async () => {
             try {
                 const [sectionsRes, gridRes, section4Res] = await Promise.all([
-                    axios.get('/api/admin/home-sections').catch(() => ({ data: { sections: [] } })),
-                    axios.get('/api/admin/grid-products').catch(() => ({ data: { sections: [] } })),
-                    axios.get('/api/admin/section4').catch(() => ({ data: { sections: [] } }))
+                    axios.get('/api/store/home-sections').catch(() => ({ data: { sections: [] } })),
+                    axios.get('/api/store/grid-products').catch(() => ({ data: { sections: [] } })),
+                    axios.get('/api/store/section4').catch(() => ({ data: { sections: [] } }))
                 ]);
                 setAdminSections(sectionsRes.data.sections || []);
                 setGridSections(Array.isArray(gridRes.data.sections) ? gridRes.data.sections : []);

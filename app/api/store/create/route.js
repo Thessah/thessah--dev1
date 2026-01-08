@@ -126,7 +126,7 @@ export async function POST(request) {
       ],
     });
 
-    // Create the store
+    // Create the store (auto-approved)
     const newStore = await Store.create({
       userId,
       name,
@@ -136,27 +136,26 @@ export async function POST(request) {
       contact,
       address,
       logo: optimizedImage,
-      status: 'pending',
-      isActive: false,
+      status: 'approved',
+      isActive: true,
     });
-    console.log('Store created:', {
+    console.log('Store created and auto-approved:', {
       id: newStore._id.toString(),
       status: newStore.status,
       isActive: newStore.isActive,
       createdAt: newStore.createdAt,
     });
 
-    // Send emails (auto-reply and welcome)
+    // Send welcome email
     try {
-      const { sendAutoReplyEmail, sendWelcomeEmail } = await import('@/lib/emailjs');
-      await sendAutoReplyEmail({ to: email, name });
+      const { sendWelcomeEmail } = await import('@/lib/emailjs');
       await sendWelcomeEmail({ to: email, name });
-      console.log('Auto-reply and welcome emails sent to', email);
+      console.log('Welcome email sent to', email);
     } catch (err) {
-      console.error('Failed to send emails:', err.message);
+      console.error('Failed to send email:', err.message);
     }
 
-    return json({ message: "Store created, waiting for approval", storeId: newStore._id.toString() }, 201);
+    return json({ message: "Store created successfully", storeId: newStore._id.toString(), status: 'approved' }, 201);
   } catch (error) {
     console.error(error);
     return json({ error: error?.code || error?.message || "Unknown error" }, 500);

@@ -16,7 +16,7 @@ export default function HomeHeroPage() {
   const fetchHeroSlides = async () => {
     try {
       const token = await getToken()
-      const { data } = await axios.get('/api/admin/hero', {
+      const { data } = await axios.get('/api/store/hero', {
         headers: { Authorization: `Bearer ${token}` }
       })
       setHeroSlides(data.slides || [])
@@ -31,7 +31,7 @@ export default function HomeHeroPage() {
     setSaving(true)
     try {
       const token = await getToken()
-      await axios.post('/api/admin/hero', { slides: heroSlides }, {
+      await axios.post('/api/store/hero', { slides: heroSlides }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       alert('Hero slides updated!')

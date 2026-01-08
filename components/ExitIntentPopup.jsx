@@ -10,10 +10,9 @@ const ExitIntentPopup = () => {
   const router = useRouter()
   const pathname = usePathname()
 
-  // Don't show on dashboard, store, or admin pages
+  // Don't show on dashboard or store pages
   const shouldShowPopup = !pathname?.startsWith('/dashboard') && 
-                          !pathname?.startsWith('/store') && 
-                          !pathname?.startsWith('/admin')
+                          !pathname?.startsWith('/store')
 
   useEffect(() => {
     // Don't run if on excluded pages

@@ -27,7 +27,7 @@ export default function AllStoresPage() {
         headers['Authorization'] = `Bearer ${token}`
       }
       
-      const { data } = await axios.get('/api/admin/stores', { headers })
+      const { data } = await axios.get('/api/store/stores', { headers })
       setStores(data.stores || [])
     } catch (error) {
       console.error('Error fetching stores:', error)

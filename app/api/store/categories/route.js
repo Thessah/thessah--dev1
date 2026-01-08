@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import authAdmin from "@/middlewares/authAdmin";
 import authSeller from "@/middlewares/authSeller";
 import connectDB from '@/lib/mongoose';
 import Category from '@/models/Category';
@@ -126,21 +125,16 @@ export async function POST(req) {
             return NextResponse.json({ error: "Unauthorized: Invalid token" }, { status: 401 });
         }
         
-        // Check if user is admin or has a store
+        // Check if user has a store
         let isAuthorized = false;
         try {
-            if (email && await authAdmin(userId, email)) {
+            // Check if user has a store (any status)
+            const store = await Store.findOne({ userId }).lean();
+            if (store) {
                 isAuthorized = true;
-                console.log('✓ Admin user authorized');
+                console.log('✓ Store owner authorized:', userId, '- Status:', store.status);
             } else {
-                // Check if user has a store (any status)
-                const store = await Store.findOne({ userId }).lean();
-                if (store) {
-                    isAuthorized = true;
-                    console.log('✓ Store owner authorized:', userId, '- Status:', store.status);
-                } else {
-                    console.warn('⚠ No store found for user:', userId);
-                }
+                console.warn('⚠ No store found for user:', userId);
             }
         } catch (authError) {
             console.warn('⚠ Authorization check failed:', authError.message);

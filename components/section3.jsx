@@ -17,7 +17,7 @@ export default function TopDeals() {
     const load = async () => {
       try {
         const [{ data: sectionData }, { data: productData }, { data: settingsRes }] = await Promise.all([
-          axios.get("/api/admin/home-sections"),
+          axios.get("/api/store/home-sections"),
           axios.get("/api/products"),
           axios.get("/api/store/settings")
         ]);
