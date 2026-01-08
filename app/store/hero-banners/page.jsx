@@ -21,6 +21,7 @@ export default function StoreHeroBannersPage() {
     cta: '',
     link: '/shop',
     image: '',
+    mobileImage: '',
     isActive: true,
     showTitle: true,
     showSubtitle: true,
@@ -149,6 +150,7 @@ export default function StoreHeroBannersPage() {
       cta: banner.cta || '',
       link: banner.link || '/shop',
       image: banner.image || '',
+      mobileImage: banner.mobileImage || '',
       isActive: banner.isActive !== undefined ? banner.isActive : true,
       showTitle: banner.showTitle !== undefined ? banner.showTitle : true,
       showSubtitle: banner.showSubtitle !== undefined ? banner.showSubtitle : true,
@@ -194,6 +196,7 @@ export default function StoreHeroBannersPage() {
       cta: '',
       link: '/shop',
       image: '',
+      mobileImage: '',
       isActive: true,
       showTitle: true,
       showSubtitle: true,
@@ -363,11 +366,82 @@ export default function StoreHeroBannersPage() {
                   {/* Preview */}
                   {formData.image && formData.image.startsWith('http') && (
                     <div className="mt-3 p-3 bg-white rounded border border-green-200">
-                      <p className="text-xs text-green-600 font-medium mb-2">✓ Image Selected:</p>
+                      <p className="text-xs text-green-600 font-medium mb-2">✓ Desktop Image Selected:</p>
                       <img
                         src={formData.image}
                         alt="Preview"
                         className="w-full h-32 object-cover rounded"
+                        onError={(e) => console.error('Image load error:', e)}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Mobile Image URL or Upload */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Mobile Banner Image <span className="text-xs text-gray-500">(optional - falls back to desktop)</span>
+                </label>
+                <p className="text-xs text-gray-500 mb-3">Recommended: 800x1200px (portrait)</p>
+                
+                <div className="space-y-3 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                  {/* URL Input */}
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">Option 1: Paste Mobile Image URL</label>
+                    <input
+                      type="text"
+                      name="mobileImage"
+                      value={formData.mobileImage}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      placeholder="https://example.com/mobile-image.jpg"
+                    />
+                  </div>
+                  
+                  {/* File Upload */}
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">Option 2: Upload Mobile Image File</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+                        try {
+                          setUploading(true)
+                          const formDataObj = new FormData()
+                          formDataObj.append('file', file)
+                          const res = await axios.post('/api/store/upload-banner', formDataObj, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                          })
+                          if (res.data.success && res.data.url) {
+                            setFormData(prev => ({ ...prev, mobileImage: res.data.url }))
+                            toast.success('Mobile image uploaded!')
+                            e.target.value = ''
+                          }
+                        } catch (error) {
+                          toast.error('Failed to upload mobile image')
+                        } finally {
+                          setUploading(false)
+                        }
+                      }}
+                      disabled={uploading}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      {uploading ? '⏳ Uploading...' : '(JPG, PNG, WebP)'}
+                    </p>
+                  </div>
+
+                  {/* Preview */}
+                  {formData.mobileImage && formData.mobileImage.startsWith('http') && (
+                    <div className="mt-3 p-3 bg-white rounded border border-green-200">
+                      <p className="text-xs text-green-600 font-medium mb-2">✓ Mobile Image Selected:</p>
+                      <img
+                        src={formData.mobileImage}
+                        alt="Mobile Preview"
+                        className="w-40 h-60 object-cover rounded mx-auto"
                         onError={(e) => console.error('Image load error:', e)}
                       />
                     </div>

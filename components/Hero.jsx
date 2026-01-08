@@ -33,6 +33,7 @@ export default function Hero() {
             // Convert database banners to slides format
             const dbSlides = activeBanners.map(banner => ({
               image: banner.image || '',
+              mobileImage: banner.mobileImage || banner.image || '',
               badge: banner.badge || '',
               subtitle: banner.subtitle || '',
               title: banner.title || '',
@@ -154,13 +155,23 @@ export default function Hero() {
               {/* Main Slide Container - Full View with Rounded Corners */}
               <div className="relative w-full h-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl">
                 {/* Background image - Fills space */}
+                {/* Desktop image - hidden on mobile */}
                 <Image
                   src={slide.image}
                   alt={slide.title}
                   fill
                   priority={i === 0}
-                  className="object-cover"
-                  sizes="(max-width: 768px) 92vw, 85vw"
+                  className="object-cover hidden sm:block"
+                  sizes="(max-width: 768px) 0vw, 85vw"
+                />
+                {/* Mobile image - shown on mobile only */}
+                <Image
+                  src={slide.mobileImage}
+                  alt={slide.title}
+                  fill
+                  priority={i === 0}
+                  className="object-cover sm:hidden"
+                  sizes="(max-width: 768px) 92vw, 0vw"
                 />
 
                 {/* Gradient overlay */}
