@@ -9,7 +9,7 @@ export default function GoldRatePage() {
   const [karat, setKarat] = useState(22)
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <div className="max-w-[1250px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
       {/* Breadcrumb */}
       <nav className="flex items-center text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1">
