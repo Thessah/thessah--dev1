@@ -22,6 +22,7 @@ const publicEndpoints = [
   '/api/store/collections', // Allow GET collections (used by CollectionsShowcase)
   '/api/store/collections/upload', // Allow image uploads for collections
   '/api/store/settings', // Allow GET/PUT homepage settings
+  '/api/gold-rate', // Public gold rate endpoint for live rates
 ];
 
 
