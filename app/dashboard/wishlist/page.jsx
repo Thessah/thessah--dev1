@@ -197,8 +197,8 @@ export default function DashboardWishlistPage() {
                                             <p className="text-sm text-slate-600 mb-2 line-clamp-2">{item.product?.description}</p>
                                             <div className="flex items-center gap-4">
                                                 <span className="text-lg font-bold text-slate-900">₹{item.product?.price}</span>
-                                                {item.product?.mrp > item.product?.price && (
-                                                    <span className="text-sm text-slate-500 line-through">₹{item.product?.mrp}</span>
+                                                {item.product?.AED > item.product?.price && (
+                                                    <span className="text-sm text-slate-500 line-through">₹{item.product?.AED}</span>
                                                 )}
                                             </div>
                                         </div>

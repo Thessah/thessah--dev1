@@ -110,7 +110,7 @@ export default function StoreManageProducts() {
                         <th className="px-4 py-3">Name</th>
                         <th className="px-4 py-3 hidden lg:table-cell">SKU</th>
                         <th className="px-4 py-3 hidden md:table-cell">Description</th>
-                        <th className="px-4 py-3 hidden md:table-cell">MRP</th>
+                        <th className="px-4 py-3 hidden md:table-cell">AED</th>
                         <th className="px-4 py-3">Price</th>
                         <th className="px-4 py-3 hidden sm:table-cell">Fast Delivery</th>
                         <th className="px-4 py-3">Stock</th>
@@ -130,7 +130,7 @@ export default function StoreManageProducts() {
                             <td className="px-4 py-3 max-w-md text-slate-600 hidden md:table-cell truncate">
                                 {product.description?.replace(/<[^>]*>/g, ' ').trim().substring(0, 100)}...
                             </td>
-                            <td className="px-4 py-3 hidden md:table-cell">{currency} {product.mrp.toLocaleString()}</td>
+                            <td className="px-4 py-3 hidden md:table-cell">{currency} {product.AED.toLocaleString()}</td>
                             <td className="px-4 py-3">{currency} {product.price.toLocaleString()}</td>
                             <td className="px-4 py-3 hidden sm:table-cell">
                                 <label className="relative inline-flex items-center cursor-pointer">

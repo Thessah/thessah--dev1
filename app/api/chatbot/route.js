@@ -17,7 +17,7 @@ export async function POST(request) {
         // Fetch products and store info for context
         await dbConnect();
         const products = await Product.find({ inStock: true })
-            .select('_id name description price mrp category inStock fastDelivery storeId')
+            .select('_id name description price AED category inStock fastDelivery storeId')
             .limit(50)
             .lean();
 
@@ -33,7 +33,7 @@ export async function POST(request) {
         const systemContext = `You are Qui's friendly shopping assistant. Help customers find products, answer questions about offers, shipping, returns, and provide excellent customer service.
 
 **Available Products (${products.length}):**
-${products.map(p => `- ${p.name} (₹${p.price}${p.mrp > p.price ? `, was ₹${p.mrp}` : ''}) - ${p.category}${p.fastDelivery ? ' - Fast Delivery Available' : ''} - Store: ${p.store.name}`).join('\n')}
+${products.map(p => `- ${p.name} (₹${p.price}${p.AED > p.price ? `, was ₹${p.AED}` : ''}) - ${p.category}${p.fastDelivery ? ' - Fast Delivery Available' : ''} - Store: ${p.store.name}`).join('\n')}
 
 **Active Offers & Coupons:**
 ${coupons.length > 0 ? coupons.map(c => 

@@ -6,7 +6,7 @@ export async function POST(request) {
     try {
         await dbConnect();
         const body = await request.json();
-        const { name, description, shortDescription, mrp, price, images, category, sku, inStock, hasVariants, variants, attributes, hasBulkPricing, bulkPricing, fastDelivery, allowReturn, allowReplacement, storeId, slug } = body;
+        const { name, description, shortDescription, AED, price, images, category, sku, inStock, hasVariants, variants, attributes, hasBulkPricing, bulkPricing, fastDelivery, allowReturn, allowReplacement, storeId, slug } = body;
 
         // Generate slug from name if not provided
         const productSlug = slug || name
@@ -25,7 +25,7 @@ export async function POST(request) {
             slug: productSlug,
             description,
             shortDescription,
-            mrp,
+            AED,
             price,
             images,
             category,
@@ -67,7 +67,7 @@ export async function GET(request){
         
         // Optimized query with field selection
         let products = await Product.find(query)
-            .select('name slug description shortDescription mrp price images category sku hasVariants variants attributes fastDelivery stockQuantity createdAt')
+            .select('name slug description shortDescription AED price images category sku hasVariants variants attributes fastDelivery stockQuantity createdAt')
             .sort({ createdAt: -1 })
             .skip(offset)
             .limit(limit)
@@ -80,8 +80,8 @@ export async function GET(request){
             try {
                 let label = null;
                 let labelType = null;
-                if (typeof product.mrp === 'number' && typeof product.price === 'number' && product.mrp > product.price) {
-                    const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+                if (typeof product.AED === 'number' && typeof product.price === 'number' && product.AED > product.price) {
+                    const discount = Math.round(((product.AED - product.price) / product.AED) * 100);
                     if (discount >= 50) {
                         label = `Min. ${discount}% Off`;
                         labelType = 'offer';

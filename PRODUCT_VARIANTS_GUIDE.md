@@ -32,13 +32,13 @@ For each color variant, fill in:
   - Example: `https://ik.imagekit.io/yourstore/product-black.jpg`
 - **Size**: Optional size (e.g., "M", "L", "XL")
 - **Price**: Price for this specific variant
-- **MRP**: Original price (for showing discount)
+- **AED**: Original price (for showing discount)
 - **Stock**: Available quantity
 
 #### Example Variant Setup:
 ```
-Color: Black  | Image: https://...black.jpg | Size: - | Price: 129 | MRP: 250 | Stock: 10
-Color: White  | Image: https://...white.jpg | Size: - | Price: 129 | MRP: 250 | Stock: 15
+Color: Black  | Image: https://...black.jpg | Size: - | Price: 129 | AED: 250 | Stock: 10
+Color: White  | Image: https://...white.jpg | Size: - | Price: 129 | AED: 250 | Stock: 15
 ```
 
 ### 3. Bulk Pricing Bundles
@@ -50,7 +50,7 @@ Color: White  | Image: https://...white.jpg | Size: - | Price: 129 | MRP: 250 | 
 #### Configure Bundle Options
 The form provides 3 default rows, but you can customize:
 
-| Label | Qty | Price | MRP | Stock | Tag |
+| Label | Qty | Price | AED | Stock | Tag |
 |-------|-----|-------|-----|-------|-----|
 | Buy 1 | 1 | 89.99 | 250.00 | 100 | (none) |
 | Bundle of 2 | 2 | 169.00 | 500.00 | 50 | MOST_POPULAR |
@@ -62,10 +62,10 @@ The form provides 3 default rows, but you can customize:
 - `(none)` - No badge
 
 #### How Savings Are Calculated
-- Savings = (MRP × Qty) - Price
+- Savings = (AED × Qty) - Price
 - Example: Bundle of 2
-  - MRP per item: ₹ 250
-  - Total MRP: ₹ 500
+  - AED per item: ₹ 250
+  - Total AED: ₹ 500
   - Bundle Price: ₹ 169
   - **You Save: ₹ 331**
 
@@ -92,7 +92,7 @@ Shows at the top of variants section with:
   - Bundle label (Buy 1, Bundle of 2, etc.)
   - Subtitle (e.g., "Perfect for you & a friend")
   - Savings amount in red
-  - Price and crossed-out MRP
+  - Price and crossed-out AED
   - Selection radio button
 - MOST_POPULAR badge appears at top-right of the option
 
@@ -122,7 +122,7 @@ model Product {
       "size": "M"
     },
     "price": 129,
-    "mrp": 250,
+    "AED": 250,
     "stock": 10
   }
 ]
@@ -137,7 +137,7 @@ model Product {
       "bundleQty": 1
     },
     "price": 89.99,
-    "mrp": 250,
+    "AED": 250,
     "stock": 100,
     "tag": ""
   },
@@ -148,7 +148,7 @@ model Product {
       "tag": "MOST_POPULAR"
     },
     "price": 169.00,
-    "mrp": 500,
+    "AED": 500,
     "stock": 50,
     "tag": "MOST_POPULAR"
   }

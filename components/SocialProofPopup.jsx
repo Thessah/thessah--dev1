@@ -200,8 +200,8 @@ const SocialProofPopup = () => {
           <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-1.5 flex items-center justify-between">
             <div className="flex items-baseline gap-1.5">
               <span className="text-white font-bold text-sm">₹{currentProduct.price}</span>
-              {currentProduct.mrp > currentProduct.price && (
-                <span className="text-white/70 text-xs line-through">₹{currentProduct.mrp}</span>
+              {currentProduct.AED > currentProduct.price && (
+                <span className="text-white/70 text-xs line-through">₹{currentProduct.AED}</span>
               )}
             </div>
             <Link 

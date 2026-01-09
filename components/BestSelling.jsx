@@ -39,8 +39,8 @@ const ProductCard = ({ product }) => {
                        product.images?.length > 1
   
   const discount =
-    product.mrp && product.mrp > product.price
-      ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
+    product.AED && product.AED > product.price
+      ? Math.round(((product.AED - product.price) / product.AED) * 100)
       : 0
   // Support both array and number for rating
   // Use backend response fields
@@ -49,7 +49,7 @@ const ProductCard = ({ product }) => {
 
   // Split price into integer and decimal
   const [intPrice, decPrice] = (product.price?.toFixed(2) || '0.00').split('.')
-  const [intOrig, decOrig] = product.mrp?.toFixed(2).split('.') || ['0', '00']
+  const [intOrig, decOrig] = product.AED?.toFixed(2).split('.') || ['0', '00']
 
   const productName = product.name || product.title || 'Untitled Product'
 
@@ -147,7 +147,7 @@ const ProductCard = ({ product }) => {
             </p>
 
             {/* Original Price */}
-            {product.mrp && product.mrp > product.price && (
+            {product.AED && product.AED > product.price && (
               <p className="text-gray-400 text-xs line-through flex items-baseline">
                 <span className="mr-0.5">₹</span>
                 <span>{intOrig}</span>

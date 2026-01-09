@@ -44,7 +44,7 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
     if (custom && !Number.isNaN(custom)) return custom
 
     if (metal === 'silver') {
-      // If API ever supplies silver, prefer it; otherwise require override
+      // Use live silver rate from API if available
       const apiSilver = rates?.rates?.perGramSilver
       return apiSilver || null
     }
@@ -52,11 +52,15 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
     // Gold: derive from 24K when possible for consistent purity scaling
     const g24 = rates?.rates?.perGram24K
     const g22 = rates?.rates?.perGram22K
+    const g18 = rates?.rates?.perGram18K
+    
     if (g24) {
       const factor = purity / 24
       return Math.round(g24 * factor)
     }
+    // Fallback to exact matches
     if (purity === 22 && g22) return g22
+    if (purity === 18 && g18) return g18
     return null
   }, [rates, purity, metal, overrideRate])
 
@@ -131,6 +135,16 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
                 <div className="text-[11px] text-gray-500 mb-0.5">22K per gram</div>
                 <div className="text-lg font-semibold text-gray-900">{currency} {rates.rates.perGram22K?.toLocaleString()}</div>
               </div>
+              <div className="rounded-xl border bg-gray-50 p-3">
+                <div className="text-[11px] text-gray-500 mb-0.5">18K per gram</div>
+                <div className="text-lg font-semibold text-gray-900">{currency} {rates.rates.perGram18K?.toLocaleString()}</div>
+              </div>
+              {rates.rates.perGramSilver && (
+                <div className="rounded-xl border bg-gray-50 p-3">
+                  <div className="text-[11px] text-gray-500 mb-0.5">Silver per gram</div>
+                  <div className="text-lg font-semibold text-gray-900">{currency} {rates.rates.perGramSilver?.toLocaleString()}</div>
+                </div>
+              )}
             </div>
 
             {/* Calculator */}
@@ -194,7 +208,7 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
                   </div>
                   <div>
                     <label className="block text-xs text-gray-600 mb-1">Per gram {metal === 'gold' ? `(${purity}K)` : `(purity ${purity})`}</label>
-                    {metal === 'silver' || overrideRate !== '' ? (
+                    {(metal === 'silver' && !rates?.rates?.perGramSilver) || overrideRate !== '' ? (
                       <input
                         type="number"
                         min="0"
@@ -211,6 +225,15 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
                       </div>
                     )}
                     {metal === 'gold' && overrideRate === '' && (
+                      <button
+                        type="button"
+                        onClick={() => setOverrideRate(String(perGram || ''))}
+                        className="mt-1 text-xs text-gray-600 underline hover:text-gray-900"
+                      >
+                        Override rate
+                      </button>
+                    )}
+                    {metal === 'silver' && overrideRate === '' && rates?.rates?.perGramSilver && (
                       <button
                         type="button"
                         onClick={() => setOverrideRate(String(perGram || ''))}

@@ -82,7 +82,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
         brand: "",
         shortDescription: "",
         description: "",
-        mrp: "",
+        AED: "",
         price: "",
         category: "",
         sku: "",
@@ -97,13 +97,13 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
     })
     // Variants state
     const [hasVariants, setHasVariants] = useState(false)
-    const [variants, setVariants] = useState([]) // { options: {color, size[, bundleQty]}, price, mrp, stock, sku?, tag? }
+    const [variants, setVariants] = useState([]) // { options: {color, size[, bundleQty]}, price, AED, stock, sku?, tag? }
     // Bulk bundle variant helper state (UI sugar over variants JSON)
     const [bulkEnabled, setBulkEnabled] = useState(false)
     const [bulkOptions, setBulkOptions] = useState([
-        { title: 'Buy 1', qty: 1, price: '', mrp: '', stock: 0, tag: '' },
-        { title: 'Bundle of 2', qty: 2, price: '', mrp: '', stock: 0, tag: 'MOST_POPULAR' },
-        { title: 'Bundle of 3', qty: 3, price: '', mrp: '', stock: 0, tag: '' },
+        { title: 'Buy 1', qty: 1, price: '', AED: '', stock: 0, tag: '' },
+        { title: 'Bundle of 2', qty: 2, price: '', AED: '', stock: 0, tag: 'MOST_POPULAR' },
+        { title: 'Bundle of 3', qty: 3, price: '', AED: '', stock: 0, tag: '' },
     ])
     const [reviewInput, setReviewInput] = useState({ name: "", rating: 5, comment: "", image: null })
     const [loading, setLoading] = useState(false)
@@ -183,7 +183,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 brand: product.brand || "",
                 shortDescription: product.shortDescription || "",
                 description: product.description || "",
-                mrp: product.mrp || "",
+                AED: product.AED || "",
                 price: product.price || "",
                 category: product.category || "",
                 sku: product.sku || "",
@@ -208,7 +208,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                     title: v?.options?.title || (Number(v?.options?.bundleQty) === 1 ? 'Buy 1' : `Bundle of ${Number(v?.options?.bundleQty) || 1}`),
                     qty: Number(v?.options?.bundleQty) || 1,
                     price: v.price ?? '',
-                    mrp: v.mrp ?? v.price ?? '',
+                    AED: v.AED ?? v.price ?? '',
                     stock: v.stock ?? 0,
                     tag: v.tag || v.options?.tag || ''
                 }))
@@ -337,15 +337,15 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                     .map(b => ({
                         options: { bundleQty: Number(b.qty), title: (b.title || undefined), tag: b.tag || undefined },
                         price: Number(b.price),
-                        mrp: Number(b.mrp || b.price),
+                        AED: Number(b.AED || b.price),
                         stock: Number(b.stock || 0),
                     }))
                 hasVariantsFlag = variantsToSend.length > 0
                 
-                // Ensure base price/mrp are set from the first bulk option for API validation
-                if (variantsToSend.length > 0 && (!productInfo.price || !productInfo.mrp)) {
+                // Ensure base price/AED are set from the first bulk option for API validation
+                if (variantsToSend.length > 0 && (!productInfo.price || !productInfo.AED)) {
                     formData.set('price', String(variantsToSend[0].price))
-                    formData.set('mrp', String(variantsToSend[0].mrp))
+                    formData.set('AED', String(variantsToSend[0].AED))
                 }
             }
             formData.append('hasVariants', String(hasVariantsFlag))
@@ -482,10 +482,10 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 {/* Pricing */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Regular Price (MRP) - ₹</label>
+                        <label className="block text-sm font-medium mb-1">Regular Price (AED) - ₹</label>
                         <div className="relative">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
-                            <input type="number" step="0.01" name="mrp" value={productInfo.mrp} onChange={onChangeHandler} className="w-full border rounded px-3 py-2 pl-14" placeholder="0.00" />
+                            <input type="number" step="0.01" name="AED" value={productInfo.AED} onChange={onChangeHandler} className="w-full border rounded px-3 py-2 pl-14" placeholder="0.00" />
                         </div>
                     </div>
                     <div>
@@ -718,7 +718,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                 <div>Label</div>
                                 <div>Qty</div>
                                 <div>Price (₹)</div>
-                                <div>MRP (₹)</div>
+                                <div>AED (₹)</div>
                                 <div>Stock</div>
                                 <div>Tag</div>
                                 <div></div>
@@ -734,8 +734,8 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                             }} />
                                         <input className="border rounded px-2 py-1" type="number" step="0.01" placeholder="₹" value={b.price}
                                             onChange={(e)=>{ const v=[...bulkOptions]; v[idx] = { ...b, price: e.target.value }; setBulkOptions(v)}} />
-                                        <input className="border rounded px-2 py-1" type="number" step="0.01" placeholder="₹" value={b.mrp}
-                                            onChange={(e)=>{ const v=[...bulkOptions]; v[idx] = { ...b, mrp: e.target.value }; setBulkOptions(v)}} />
+                                        <input className="border rounded px-2 py-1" type="number" step="0.01" placeholder="₹" value={b.AED}
+                                            onChange={(e)=>{ const v=[...bulkOptions]; v[idx] = { ...b, AED: e.target.value }; setBulkOptions(v)}} />
                                         <input className="border rounded px-2 py-1" type="number" placeholder="Stock" value={b.stock}
                                             onChange={(e)=>{ const v=[...bulkOptions]; v[idx] = { ...b, stock: Number(e.target.value) }; setBulkOptions(v)}} />
                                         <select className="border rounded px-2 py-1" value={b.tag}
@@ -750,14 +750,14 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                     </div>
                                 ))}
                             </div>
-                            <button type="button" className="text-green-600 text-sm font-medium" onClick={()=> setBulkOptions([...bulkOptions, { title: '', qty: 1, price: '', mrp: '', stock: 0, tag: '' }])}>+ Add Bundle</button>
+                            <button type="button" className="text-green-600 text-sm font-medium" onClick={()=> setBulkOptions([...bulkOptions, { title: '', qty: 1, price: '', AED: '', stock: 0, tag: '' }])}>+ Add Bundle</button>
                         </div>
                     )}
 
                     {/* Classic size/color variants editor */}
                     {hasVariants && !bulkEnabled && (
                         <div className="mt-3 space-y-3">
-                            <div className="text-sm text-gray-600 mb-3">Add variant rows below. Each variant can have a custom title, color, size, image, SKU, price, MRP, and stock.</div>
+                            <div className="text-sm text-gray-600 mb-3">Add variant rows below. Each variant can have a custom title, color, size, image, SKU, price, AED, and stock.</div>
                             
                             <div className="space-y-3">
                                 {variants.map((v, idx) => (
@@ -838,11 +838,11 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                                     }} />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">MRP (₹)</label>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">AED (₹)</label>
                                                 <input className="w-full border rounded px-3 py-2" placeholder="0.00" type="number" step="0.01"
-                                                    value={v.mrp ?? ''}
+                                                    value={v.AED ?? ''}
                                                     onChange={(e)=>{
-                                                        const nv=[...variants]; nv[idx]={...v, mrp:Number(e.target.value)}; setVariants(nv);
+                                                        const nv=[...variants]; nv[idx]={...v, AED:Number(e.target.value)}; setVariants(nv);
                                                     }} />
                                             </div>
                                         </div>
@@ -850,7 +850,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                 ))}
                             </div>
                             
-                            <button type="button" className="w-full md:w-auto px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-medium" onClick={()=> setVariants([...variants, { options:{}, price:0, mrp:0, stock:0, sku:'' }])}>+ Add Variant</button>
+                            <button type="button" className="w-full md:w-auto px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 font-medium" onClick={()=> setVariants([...variants, { options:{}, price:0, AED:0, stock:0, sku:'' }])}>+ Add Variant</button>
                         </div>
                     )}
                 </div>

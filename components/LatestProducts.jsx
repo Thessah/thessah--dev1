@@ -40,8 +40,8 @@ const ProductCard = ({ product }) => {
                        product.images?.length > 1
 
   const discount =
-    product.mrp && product.mrp > product.price
-      ? Math.round(((product.mrp - product.price) / product.mrp) * 100)
+    product.AED && product.AED > product.price
+      ? Math.round(((product.AED - product.price) / product.AED) * 100)
       : 0
 
   // Review fetching logic (axios, like product page)
@@ -158,9 +158,9 @@ const ProductCard = ({ product }) => {
                 ₹{Number(product.price).toFixed(2)}
               </p>
             )}
-            {Number(product.mrp) > 0 && Number(product.mrp) > Number(product.price) && (
+            {Number(product.AED) > 0 && Number(product.AED) > Number(product.price) && (
               <p className="text-xs sm:text-sm text-gray-400 line-through">
-                ₹{Number(product.mrp).toFixed(2)}
+                ₹{Number(product.AED).toFixed(2)}
               </p>
             )}
           </div>

@@ -11,7 +11,7 @@ export async function GET(request) {
     }
     // Only select needed fields for performance
     const product = await Product.findOne({ slug })
-        .select('name slug description shortDescription mrp price images category sku inStock stockQuantity hasVariants variants attributes hasBulkPricing bulkPricing fastDelivery allowReturn allowReplacement storeId createdAt updatedAt')
+        .select('name slug description shortDescription AED price images category sku inStock stockQuantity hasVariants variants attributes hasBulkPricing bulkPricing fastDelivery allowReturn allowReplacement storeId createdAt updatedAt')
         .lean();
     if (!product) {
         return NextResponse.json({ error: "Product not found" }, { status: 404 });

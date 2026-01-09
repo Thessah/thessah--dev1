@@ -156,7 +156,7 @@ export default function WishlistAuthed() {
                   const handleSelect = (e) => { e.stopPropagation(); toggleSelect(product._pid); };
                   const handleRemove = (e) => { e.stopPropagation(); removeFromWishlist(product._pid); };
                   const handleAddToCart = (e) => { e.stopPropagation(); dispatch(addToCart({ product })); };
-                  const discount = product.mrp && product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+                  const discount = product.AED && product.AED > product.price ? Math.round(((product.AED - product.price) / product.AED) * 100) : 0;
                   return (
                     <div key={product._pid} className="flex items-center gap-4 py-4 group hover:bg-gray-50 transition rounded-lg">
                       <input
@@ -188,8 +188,8 @@ export default function WishlistAuthed() {
                         </div>
                         <div className="flex items-center gap-2 text-sm">
                           <span className="font-bold text-lg text-gray-900">₹{product.price || 0}</span>
-                          {product.mrp && (
-                            <span className="text-xs text-gray-400 line-through">₹{product.mrp}</span>
+                          {product.AED && (
+                            <span className="text-xs text-gray-400 line-through">₹{product.AED}</span>
                           )}
                         </div>
                       </div>

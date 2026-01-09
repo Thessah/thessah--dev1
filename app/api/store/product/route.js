@@ -95,7 +95,7 @@ export async function POST(request) {
         const fastDelivery = String(formData.get("fastDelivery") || "false").toLowerCase() === "true";
 
         // Base pricing (used when no variants)
-        const mrp = Number(formData.get("mrp"));
+        const AED = Number(formData.get("AED"));
         const price = Number(formData.get("price"));
         // Slug from form (manual or auto)
         let slug = formData.get("slug")?.toString().trim() || "";
@@ -123,7 +123,7 @@ export async function POST(request) {
 
         let variants = [];
         let finalPrice = price;
-        let finalMrp = mrp;
+        let finalAED = AED;
         let inStock = true;
 
         if (hasVariants) {
@@ -138,15 +138,15 @@ export async function POST(request) {
 
             // Compute derived fields from variants
             const prices = variants.map(v => Number(v.price)).filter(n => Number.isFinite(n));
-            const mrps = variants.map(v => Number(v.mrp ?? v.price)).filter(n => Number.isFinite(n));
+            const AEDs = variants.map(v => Number(v.AED ?? v.price)).filter(n => Number.isFinite(n));
             const stocks = variants.map(v => Number(v.stock ?? 0)).filter(n => Number.isFinite(n));
             finalPrice = prices.length ? Math.min(...prices) : 0;
-            finalMrp = mrps.length ? Math.min(...mrps) : finalPrice;
+            finalAED = AEDs.length ? Math.min(...AEDs) : finalPrice;
             inStock = stocks.some(s => s > 0);
         } else {
-            // No variants: require price and mrp
-            if (!Number.isFinite(price) || !Number.isFinite(mrp)) {
-                return NextResponse.json({ error: "Price and MRP are required when no variants provided" }, { status: 400 });
+            // No variants: require price and AED
+            if (!Number.isFinite(price) || !Number.isFinite(AED)) {
+                return NextResponse.json({ error: "Price and AED are required when no variants provided" }, { status: 400 });
             }
             inStock = true;
         }
@@ -182,7 +182,7 @@ export async function POST(request) {
             slug,
             description,
             shortDescription,
-            mrp: finalMrp,
+            AED: finalAED,
             price: finalPrice,
             category,
             sku,
@@ -254,7 +254,7 @@ export async function PUT(request) {
         const hasVariants = String(formData.get("hasVariants") || "").toLowerCase() === "true";
         const variantsRaw = formData.get("variants");
         const attributesRaw = formData.get("attributes");
-        const mrp = formData.get("mrp") ? Number(formData.get("mrp")) : undefined;
+        const AED = formData.get("AED") ? Number(formData.get("AED")) : undefined;
         const price = formData.get("price") ? Number(formData.get("price")) : undefined;
         const fastDelivery = String(formData.get("fastDelivery") || "").toLowerCase() === "true";
         let slug = formData.get("slug")?.toString().trim() || "";
@@ -290,25 +290,25 @@ export async function PUT(request) {
             }
         }
 
-        // Compute variants/price/mrp/inStock
+        // Compute variants/price/AED/inStock
         let variants = product.variants || [];
         let attributes = product.attributes || {};
         let finalPrice = price ?? product.price;
-        let finalMrp = mrp ?? product.mrp;
+        let finalAED = AED ?? product.AED;
         let inStock = product.inStock;
 
         if (hasVariants) {
             try { variants = JSON.parse(variantsRaw || "[]"); } catch { variants = []; }
             const prices = variants.map(v => Number(v.price)).filter(n => Number.isFinite(n));
-            const mrps = variants.map(v => Number(v.mrp ?? v.price)).filter(n => Number.isFinite(n));
+            const AEDs = variants.map(v => Number(v.AED ?? v.price)).filter(n => Number.isFinite(n));
             const stocks = variants.map(v => Number(v.stock ?? 0)).filter(n => Number.isFinite(n));
             finalPrice = prices.length ? Math.min(...prices) : finalPrice;
-            finalMrp = mrps.length ? Math.min(...mrps) : finalMrp;
+            finalAED = AEDs.length ? Math.min(...AEDs) : finalAED;
             inStock = stocks.some(s => s > 0);
-        } else if (price !== undefined || mrp !== undefined) {
-            // no variants, keep numeric price/mrp if provided
+        } else if (price !== undefined || AED !== undefined) {
+            // no variants, keep numeric price/AED if provided
             if (price !== undefined) finalPrice = price;
-            if (mrp !== undefined) finalMrp = mrp;
+            if (AED !== undefined) finalAED = AED;
         }
 
         let shortDescription = product.shortDescription;
@@ -327,7 +327,7 @@ export async function PUT(request) {
             name,
             description,
             shortDescription,
-            mrp: finalMrp,
+            AED: finalAED,
             price: finalPrice,
             category,
             sku,
