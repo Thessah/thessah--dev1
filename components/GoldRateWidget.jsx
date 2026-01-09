@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 // A modern, self-contained live gold rate card with an inline calculator.
-export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency = '₹', showCalculator = true }) {
+export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency = 'AED', showCalculator = true }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [rates, setRates] = useState(null)

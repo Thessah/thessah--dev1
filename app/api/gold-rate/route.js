@@ -6,7 +6,7 @@ async function fetchFromGoldAPI() {
   const token = process.env.GOLDAPI_TOKEN || process.env.NEXT_PUBLIC_GOLDAPI_TOKEN
   if (!token) return null
   try {
-    const res = await fetch('https://www.goldapi.io/api/XAU/INR', {
+    const res = await fetch('https://www.goldapi.io/api/XAU/AED', {
       headers: { 'x-access-token': token, 'Accept': 'application/json' },
       // Avoid caching for fresh rates
       cache: 'no-store'
@@ -43,12 +43,12 @@ export async function GET() {
   }
 
   // Fallback: conservative default numbers to avoid breaking UI
-  const fallback24 = 7000 // INR per gram 24K (example fallback)
+  const fallback24 = 275 // AED per gram 24K (example fallback)
   const fallback22 = Math.round(fallback24 * (22 / 24))
   return NextResponse.json({
     success: true,
     rates: { perGram24K: fallback24, perGram22K: fallback22 },
     lastUpdated: now,
-    disclaimer: 'Live provider not configured. Showing indicative fallback rates.'
+    disclaimer: 'Live provider not configured. Showing indicative AED fallback rates.'
   }, { status: 200 })
 }
