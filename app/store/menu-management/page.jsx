@@ -107,6 +107,23 @@ export default function MenuManagement() {
     toast.success('Footer link deleted')
   }
 
+  const addFooterSection = () => {
+    const newSection = {
+      title: 'New Section',
+      links: [{ name: 'New Link', link: '#', isPhone: false, isChat: false }]
+    }
+    setFooterSections([...(footerSections || []), newSection])
+    setHasFooterChanges(true)
+    toast.success('Footer section added')
+  }
+
+  const deleteFooterSection = (sectionIndex) => {
+    const updated = (footerSections || []).filter((_, i) => i !== sectionIndex)
+    setFooterSections(updated)
+    setHasFooterChanges(true)
+    toast.success('Footer section deleted')
+  }
+
   const saveNavMenu = async () => {
     setLoading(true)
     try {
@@ -290,6 +307,15 @@ export default function MenuManagement() {
             </p>
           </div>
 
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={addFooterSection}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
+              + Add Section
+            </button>
+          </div>
+
           <div className="space-y-6">
             {footerSections.map((section, sectionIndex) => (
               <div key={sectionIndex} className="border border-gray-200 rounded-lg p-4">
@@ -303,6 +329,15 @@ export default function MenuManagement() {
                     onChange={(e) => handleFooterSectionTitleChange(sectionIndex, e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   />
+                </div>
+
+                <div className="flex justify-end mb-2">
+                  <button
+                    onClick={() => deleteFooterSection(sectionIndex)}
+                    className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                  >
+                    Delete Section
+                  </button>
                 </div>
 
               <div className="space-y-3">
