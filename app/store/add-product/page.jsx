@@ -93,7 +93,8 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
         allowReturn: true,
         allowReplacement: true,
         reviews: [],
-        badges: [] // Array of badge labels like "Price Lower Than Usual", "Hot Deal", etc.
+        badges: [], // Array of badge labels like "Price Lower Than Usual", "Hot Deal", etc.
+        tags: []
     })
     // Variants state
     const [hasVariants, setHasVariants] = useState(false)
@@ -194,7 +195,8 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 allowReturn: product.allowReturn !== undefined ? product.allowReturn : true,
                 allowReplacement: product.allowReplacement !== undefined ? product.allowReplacement : true,
                 reviews: product.reviews || [],
-                badges: product.attributes?.badges || []
+                badges: product.attributes?.badges || [],
+                tags: product.tags || []
             })
             const pv = Array.isArray(product.variants) ? product.variants : []
             setHasVariants(Boolean(product.hasVariants))
@@ -311,6 +313,8 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 } else if (key === 'reviews') {
                     const cleanReviews = value.map(({ name, rating, comment }) => ({ name, rating, comment }))
                     formData.append('reviews', JSON.stringify(cleanReviews))
+                } else if (key === 'tags') {
+                    formData.append('tags', JSON.stringify(value))
                 } else if (key === 'slug') {
                     formData.append('slug', value.trim())
                 } else {
@@ -501,6 +505,51 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 <div>
                     <label className="block text-sm font-medium mb-1">Short Description</label>
                     <input name="shortDescription" value={productInfo.shortDescription} onChange={onChangeHandler} className="w-full border rounded px-3 py-2" placeholder="One-liner overview" />
+                </div>
+
+                {/* Tags */}
+                <div>
+                    <label className="block text-sm font-medium mb-1">Tags</label>
+                    <div className="flex gap-2 mb-2 flex-wrap">
+                        {productInfo.tags.map((tag, idx) => (
+                            <span key={idx} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 text-xs">
+                                {tag}
+                                <button type="button" className="text-gray-500 hover:text-red-600" onClick={() => setProductInfo(p=>({ ...p, tags: p.tags.filter((_,i)=>i!==idx) }))}>×</button>
+                            </span>
+                        ))}
+                    </div>
+                    <div className="flex gap-2">
+                        <input
+                            id="tagInput"
+                            className="flex-1 border rounded px-3 py-2"
+                            placeholder="Type a tag and press Enter (e.g., Gold, Earrings, Stud)"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ',') {
+                                    e.preventDefault();
+                                    const val = e.currentTarget.value.trim();
+                                    if (val && !productInfo.tags.includes(val)) {
+                                        setProductInfo(p=>({ ...p, tags: [...p.tags, val] }));
+                                        e.currentTarget.value = '';
+                                    }
+                                }
+                            }}
+                        />
+                        <button
+                            type="button"
+                            className="px-3 py-2 border rounded bg-gray-50 hover:bg-gray-100"
+                            onClick={() => {
+                                const el = document.getElementById('tagInput');
+                                if (el && typeof el.value === 'string') {
+                                    const val = el.value.trim();
+                                    if (val && !productInfo.tags.includes(val)) {
+                                        setProductInfo(p=>({ ...p, tags: [...p.tags, val] }));
+                                        el.value = '';
+                                    }
+                                }
+                            }}
+                        >Add</button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Tags improve search discoverability. Examples: Gold, Diamond, Earrings, Stud, Wedding</p>
                 </div>
 
                 {/* Product Badges */}

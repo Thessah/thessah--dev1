@@ -20,6 +20,7 @@ const ProductSchema = new mongoose.Schema({
   fastDelivery: { type: Boolean, default: false },
   allowReturn: { type: Boolean, default: true },
   allowReplacement: { type: Boolean, default: true },
+  tags: { type: [String], default: [] },
   storeId: String,
 }, { timestamps: true });
 
@@ -28,5 +29,12 @@ ProductSchema.index({ inStock: 1, createdAt: -1 });
 ProductSchema.index({ category: 1, inStock: 1 });
 ProductSchema.index({ storeId: 1, inStock: 1 });
 ProductSchema.index({ slug: 1 });
+ProductSchema.index({ tags: 1 });
+// Text index for basic search across common fields
+try {
+  ProductSchema.index({ name: 'text', description: 'text', shortDescription: 'text', category: 'text', tags: 'text' });
+} catch (e) {
+  // Ignore if index already exists or fails in certain environments
+}
 
 export default mongoose.models.Product || mongoose.model("Product", ProductSchema);

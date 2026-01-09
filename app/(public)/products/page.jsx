@@ -26,6 +26,7 @@ function ProductsContent() {
         inStock: false
     })
     const [sortBy, setSortBy] = useState('newest') // newest, price-low, price-high, rating
+    const [searchQuery, setSearchQuery] = useState('')
 
     // Get unique categories from products
     const categories = useMemo(() => {
@@ -97,6 +98,18 @@ function ProductsContent() {
             filtered = filtered.filter(p => p.inStock)
         }
 
+        // Text search filter
+        if (searchQuery && searchQuery.trim().length > 0) {
+            const q = searchQuery.trim().toLowerCase()
+            filtered = filtered.filter(p => {
+                const fields = [p.name, p.description, p.shortDescription, p.category]
+                const tags = Array.isArray(p.tags) ? p.tags : []
+                const inText = fields.some(f => typeof f === 'string' && f.toLowerCase().includes(q))
+                const inTags = tags.some(t => String(t).toLowerCase().includes(q))
+                return inText || inTags
+            })
+        }
+
         // Sort products
         switch (sortBy) {
             case 'price-low':
@@ -131,10 +144,20 @@ function ProductsContent() {
         <div className="bg-white">
             <div className="max-w-[1400px] mx-auto px-4 py-6">
                 {/* Header with Results Count */}
-                <div className="mb-6">
-                    <h1 className="text-3xl md:text-4xl font-serif text-gray-900 mb-2">
+                <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <h1 className="text-3xl md:text-4xl font-serif text-gray-900">
                         All Jewellery <span className="text-gray-500 text-xl">({filteredProducts.length} results)</span>
                     </h1>
+                    {/* Search */}
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e)=> setSearchQuery(e.target.value)}
+                            placeholder="Search by name, tag..."
+                            className="w-64 md:w-80 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        />
+                    </div>
                 </div>
 
                 {/* Filter Chips & Sort */}

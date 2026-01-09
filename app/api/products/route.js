@@ -58,16 +58,39 @@ export async function GET(request){
         const limit = parseInt(searchParams.get('limit') || '50', 10); // increased default
         const offset = parseInt(searchParams.get('offset') || '0', 10);
         const fastDelivery = searchParams.get('fastDelivery');
+        const storeId = searchParams.get('storeId');
+        const category = searchParams.get('category');
+        const tag = searchParams.get('tag');
+        const q = searchParams.get('q');
         
         // Build query
         const query = { inStock: true };
         if (fastDelivery === 'true') {
             query.fastDelivery = true;
         }
+        if (storeId) {
+            query.storeId = storeId;
+        }
+        if (category) {
+            query.category = category;
+        }
+        if (tag) {
+            query.tags = { $in: [tag] };
+        }
+        if (q && q.trim().length > 0) {
+            const regex = new RegExp(q.trim(), 'i');
+            query.$or = [
+                { name: regex },
+                { description: regex },
+                { shortDescription: regex },
+                { category: regex },
+                { tags: regex },
+            ];
+        }
         
         // Optimized query with field selection
         let products = await Product.find(query)
-            .select('name slug description shortDescription AED price images category sku hasVariants variants attributes fastDelivery stockQuantity createdAt')
+            .select('name slug description shortDescription AED price images category sku hasVariants variants attributes fastDelivery stockQuantity createdAt tags')
             .sort({ createdAt: -1 })
             .skip(offset)
             .limit(limit)

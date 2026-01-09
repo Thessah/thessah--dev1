@@ -86,6 +86,18 @@ export async function POST(request) {
         const category = formData.get("category");
         const sku = formData.get("sku") || null;
         const images = formData.getAll("images");
+        // Tags: accept JSON string or comma-separated
+        let tagsRaw = formData.get("tags");
+        let tags = [];
+        if (typeof tagsRaw === 'string' && tagsRaw.trim().length > 0) {
+            try {
+                const parsed = JSON.parse(tagsRaw);
+                if (Array.isArray(parsed)) tags = parsed.map(t => String(t).trim()).filter(Boolean);
+                else tags = String(tagsRaw).split(',').map(t => t.trim()).filter(Boolean);
+            } catch {
+                tags = String(tagsRaw).split(',').map(t => t.trim()).filter(Boolean);
+            }
+        }
         const stockQuantity = formData.get("stockQuantity") ? Number(formData.get("stockQuantity")) : 0;
         // New: variants support
         const hasVariants = String(formData.get("hasVariants") || "false").toLowerCase() === "true";
@@ -193,6 +205,7 @@ export async function POST(request) {
             inStock,
             fastDelivery,
             stockQuantity,
+            tags,
             storeId,
         });
 
@@ -254,6 +267,23 @@ export async function PUT(request) {
         const hasVariants = String(formData.get("hasVariants") || "").toLowerCase() === "true";
         const variantsRaw = formData.get("variants");
         const attributesRaw = formData.get("attributes");
+        // Tags: accept JSON or comma-separated
+        let tagsRaw = formData.get("tags");
+        let tags = undefined; // undefined means don't change
+        if (typeof tagsRaw === 'string') {
+            const trimmed = tagsRaw.trim();
+            if (trimmed.length > 0) {
+                try {
+                    const parsed = JSON.parse(trimmed);
+                    if (Array.isArray(parsed)) tags = parsed.map(t => String(t).trim()).filter(Boolean);
+                    else tags = String(trimmed).split(',').map(t => t.trim()).filter(Boolean);
+                } catch {
+                    tags = String(trimmed).split(',').map(t => t.trim()).filter(Boolean);
+                }
+            } else {
+                tags = []; // explicit empty to clear tags
+            }
+        }
         const AED = formData.get("AED") ? Number(formData.get("AED")) : undefined;
         const price = formData.get("price") ? Number(formData.get("price")) : undefined;
         const fastDelivery = String(formData.get("fastDelivery") || "").toLowerCase() === "true";
@@ -338,6 +368,10 @@ export async function PUT(request) {
             inStock,
             fastDelivery,
         };
+
+        if (tags !== undefined) {
+            updateData.tags = tags;
+        }
 
         // Add stockQuantity if provided
         if (stockQuantity !== undefined) {
