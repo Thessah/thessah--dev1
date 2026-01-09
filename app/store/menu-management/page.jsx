@@ -16,6 +16,8 @@ export default function MenuManagement() {
   const [footerSections, setFooterSections] = useState([])
   const [hasFooterChanges, setHasFooterChanges] = useState(false)
 
+  const [categories, setCategories] = useState([])
+
   const [editingNavIndex, setEditingNavIndex] = useState(null)
   const [editingFooterSection, setEditingFooterSection] = useState(null)
   const [editingFooterLinkIndex, setEditingFooterLinkIndex] = useState(null)
@@ -36,7 +38,10 @@ export default function MenuManagement() {
   const fetchData = async () => {
     try {
       setIsFetching(true)
-      const settingsRes = await axios.get('/api/store/settings')
+      const [settingsRes, categoriesRes] = await Promise.all([
+        axios.get('/api/store/settings'),
+        axios.get('/api/store/categories')
+      ])
       
       if (settingsRes.data.settings?.navMenuItems) {
         setNavMenuItems(settingsRes.data.settings.navMenuItems)
@@ -44,6 +49,10 @@ export default function MenuManagement() {
 
       if (settingsRes.data.settings?.footerSections) {
         setFooterSections(settingsRes.data.settings.footerSections)
+      }
+
+      if (categoriesRes.data?.categories) {
+        setCategories(categoriesRes.data.categories)
       }
     } catch (error) {
       console.error('Fetch error:', error)
@@ -122,6 +131,39 @@ export default function MenuManagement() {
     setFooterSections(updated)
     setHasFooterChanges(true)
     toast.success('Footer section deleted')
+  }
+
+  const handleNavCategorySelect = (index, categoryId) => {
+    const cat = categories.find((c) => c._id === categoryId)
+    if (!cat) return
+    const updated = [...navMenuItems]
+    const linkUrl = `/category/${cat.slug || cat._id}`
+    updated[index] = {
+      ...updated[index],
+      link: linkUrl,
+      name: updated[index].name || cat.name,
+      categoryId
+    }
+    setNavMenuItems(updated)
+    setHasNavChanges(true)
+    toast.success('Category link set')
+  }
+
+  const handleFooterLinkCategorySelect = (sectionIndex, linkIndex, categoryId) => {
+    const cat = categories.find((c) => c._id === categoryId)
+    if (!cat) return
+    const linkUrl = `/category/${cat.slug || cat._id}`
+    const updated = [...footerSections]
+    const currentLink = updated[sectionIndex].links[linkIndex]
+    updated[sectionIndex].links[linkIndex] = {
+      ...currentLink,
+      link: linkUrl,
+      name: currentLink.name || cat.name,
+      categoryId
+    }
+    setFooterSections(updated)
+    setHasFooterChanges(true)
+    toast.success('Category link applied')
   }
 
   const saveNavMenu = async () => {
@@ -258,6 +300,26 @@ export default function MenuManagement() {
                       />
                     </div>
                   </div>
+                  {categories.length > 0 && (
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Set from Category
+                        </label>
+                        <select
+                          value={item.categoryId || ''}
+                          onChange={(e) => handleNavCategorySelect(index, e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">-- Select category --</option>
+                          {categories.map((cat) => (
+                            <option key={cat._id} value={cat._id}>{cat.name}</option>
+                          ))}
+                        </select>
+                        <p className="text-xs text-gray-500 mt-1">Selecting sets the link to that category.</p>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -378,6 +440,26 @@ export default function MenuManagement() {
                           />
                         </div>
                       </div>
+                      {categories.length > 0 && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                              Set from Category
+                            </label>
+                            <select
+                              value={link.categoryId || ''}
+                              onChange={(e) => handleFooterLinkCategorySelect(sectionIndex, linkIndex, e.target.value)}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="">-- Select category --</option>
+                              {categories.map((cat) => (
+                                <option key={cat._id} value={cat._id}>{cat.name}</option>
+                              ))}
+                            </select>
+                            <p className="text-xs text-gray-500 mt-1">Selecting sets the link to that category.</p>
+                          </div>
+                        </div>
+                      )}
                       <div className="flex gap-4">
                         <div className="flex items-center gap-2">
                           <input
