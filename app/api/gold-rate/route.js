@@ -9,7 +9,17 @@ async function fetchFromMetalPriceAPI() {
       `https://api.metalpriceapi.com/v1/latest?api_key=${apiKey}&base=AED&currencies=XAU,XAG`,
       { cache: 'no-store' }
     )
-    if (!res.ok) return null
+    if (!res.ok) {
+      console.error('Metal Price API error:', res.status, res.statusText)
+      return null
+    }
+    
+    const contentType = res.headers.get('content-type')
+    if (!contentType || !contentType.includes('application/json')) {
+      console.error('Metal Price API returned non-JSON response')
+      return null
+    }
+    
     const data = await res.json()
     
     // metalpriceapi returns rates where base=AED means "1 AED = X units of XAU"
@@ -38,7 +48,8 @@ async function fetchFromMetalPriceAPI() {
       perGramSilver,
       source: 'metalpriceapi.com'
     }
-  } catch {
+  } catch (error) {
+    console.error('Metal Price API fetch error:', error.message)
     return null
   }
 }

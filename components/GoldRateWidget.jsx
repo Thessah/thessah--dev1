@@ -96,7 +96,7 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
 
   return (
     <div className="rounded-2xl overflow-hidden shadow-sm border bg-white">
-      {/* Header */}
+      
       <div className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-300 px-4 py-3 text-white flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-200 animate-pulse" />
@@ -117,7 +117,7 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
         </div>
       </div>
 
-      {/* Body */}
+   
       <div className="p-4 md:p-5">
         {loading ? (
           <div className="text-sm text-gray-500">Fetching rates…</div>
@@ -125,7 +125,7 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
           <div className="text-sm text-red-600">{error}</div>
         ) : (
           <div className="space-y-4">
-            {/* Rate tiles */}
+          
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl border bg-gray-50 p-3">
                 <div className="text-[11px] text-gray-500 mb-0.5">24K per gram</div>
@@ -147,7 +147,7 @@ export default function GoldRateWidget({ weightGrams, purityKarat = 22, currency
               )}
             </div>
 
-            {/* Calculator */}
+           
             {showCalculator && (
               <div className="rounded-xl border p-3 md:p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
