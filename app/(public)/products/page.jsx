@@ -3,7 +3,7 @@ import { Suspense, useState, useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchProducts } from '@/lib/features/product/productSlice'
 import ProductCard from '@/components/ProductCard'
-import { ChevronDownIcon, ChevronUpIcon, FilterIcon, XIcon, StarIcon } from 'lucide-react'
+import { ChevronDownIcon, ChevronUpIcon, FilterIcon, XIcon, StarIcon, PlusIcon } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 
 function ProductsContent() {
@@ -18,6 +18,7 @@ function ProductsContent() {
     const categoryParam = searchParams.get('category')
 
     const [showFilters, setShowFilters] = useState(false)
+    const [showMoreCats, setShowMoreCats] = useState(false)
     const [filters, setFilters] = useState({
         categories: categoryParam ? [categoryParam] : [],
         priceRange: [0, 100000],
@@ -52,6 +53,16 @@ function ProductsContent() {
             inStock: false
         })
         setSortBy('newest')
+    }
+
+    const applyPriceRange = (min, max) => {
+        setFilters(prev => ({ ...prev, priceRange: [min, max] }))
+    }
+
+    const applyCategory = (label) => {
+        // Map friendly labels to actual category keys where needed
+        const category = label === 'Gold Jewellery' ? 'Gold' : label
+        toggleCategory(category)
     }
 
     // Filter and sort products
@@ -128,10 +139,10 @@ function ProductsContent() {
 
                 {/* Filter Chips & Sort */}
                 <div className="flex flex-wrap items-center gap-3 mb-6 pb-4 border-b">
-                    {/* Mobile Filter Toggle */}
+                    {/* Filter Toggle (desktop + mobile) */}
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className="lg:hidden flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50"
+                        className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50"
                     >
                         <FilterIcon size={18} />
                         Filter
@@ -141,6 +152,60 @@ function ProductsContent() {
                             </span>
                         )}
                     </button>
+
+                    {/* Quick Filters (suggested) */}
+                    <button
+                        onClick={() => applyPriceRange(25000, 50000)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                        aria-label="AED 25,000 - AED 50,000"
+                    >
+                        <PlusIcon size={14} />
+                        <span>AED 25,000 - AED 50,000</span>
+                    </button>
+                    <button
+                        onClick={() => applyCategory('Gifts For Him')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    >
+                        <PlusIcon size={14} />
+                        <span>Gifts For Him</span>
+                    </button>
+                    <button
+                        onClick={() => applyCategory('Women')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    >
+                        <PlusIcon size={14} />
+                        <span>Women</span>
+                    </button>
+                    <button
+                        onClick={() => applyCategory('Gold Jewellery')}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    >
+                        <PlusIcon size={14} />
+                        <span>Gold Jewellery</span>
+                    </button>
+                    <button
+                        onClick={() => setShowMoreCats(v => !v)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                    >
+                        <PlusIcon size={14} />
+                        <span>Show More</span>
+                        {showMoreCats ? <ChevronUpIcon size={14} /> : <ChevronDownIcon size={14} />}
+                    </button>
+
+                    {showMoreCats && (
+                        <div className="w-full flex flex-wrap items-center gap-2 pl-8">
+                            {categories.slice(0, 10).map(cat => (
+                                <button
+                                    key={`more-${cat}`}
+                                    onClick={() => applyCategory(cat)}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-300 rounded-full text-xs hover:bg-gray-50"
+                                >
+                                    <PlusIcon size={12} />
+                                    <span>{cat}</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
 
                     {/* Active Filter Chips */}
                     {filters.categories.map(cat => (
