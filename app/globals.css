@@ -77,6 +77,14 @@
 }
 
 @layer base {
+    html, body {
+        background-color: #ffffff !important;
+    }
+
+    html, body {
+        background-image: none !important;
+    }
+
     button {
         cursor: pointer;
     }
