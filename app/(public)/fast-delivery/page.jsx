@@ -19,11 +19,11 @@ export default function FastDeliveryPage() {
   const fetchFastDeliveryProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get('/api/products?fastDelivery=true');
+      const { data } = await axios.get('/api/products?category=Gold');
       setProducts(data.products || []);
     } catch (error) {
-      console.error('Error fetching fast delivery products:', error);
-      setError('Failed to load fast delivery products');
+      console.error('Error fetching gold products:', error);
+      setError('Failed to load gold products');
     } finally {
       setLoading(false);
     }
@@ -35,20 +35,20 @@ export default function FastDeliveryPage() {
 
   return (
     <>
-      <PageTitle title="Fast Delivery Products" />
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white -mt-12">
+      <PageTitle title="Gold Jewellery" />
+      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white -mt-12">
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-12 px-4">
+        <div className="bg-gradient-to-r from-amber-600 to-yellow-600 text-white py-12 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-center gap-3 mb-4">
               <TruckIcon size={40} className="animate-bounce" />
               <ZapIcon size={32} className="text-yellow-300" />
             </div>
             <h1 className="text-3xl md:text-5xl font-bold text-center mb-4">
-              Fast Delivery Products
+              Gold Jewellery Collection
             </h1>
-            <p className="text-center text-blue-100 text-lg max-w-2xl mx-auto">
-              Get these products delivered quickly! Lightning-fast shipping on all items below.
+            <p className="text-center text-amber-100 text-lg max-w-2xl mx-auto">
+              Explore our exquisite collection of gold jewelry. Timeless elegance in every piece.
             </p>
           </div>
         </div>
@@ -69,31 +69,31 @@ export default function FastDeliveryPage() {
             <div className="text-center py-16">
               <TruckIcon size={80} className="mx-auto text-gray-300 mb-6" />
               <h2 className="text-2xl font-bold text-gray-800 mb-3">
-                No Fast Delivery Products Available
+                No Gold Jewellery Available
               </h2>
               <p className="text-gray-600 mb-6">
-                Check back soon for products with fast delivery options!
+                Check back soon for our gold jewelry collection!
               </p>
               <a
                 href="/products"
-                className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+                className="inline-block px-6 py-3 bg-amber-600 text-white rounded-lg font-semibold hover:bg-amber-700 transition"
               >
-                Browse All Products
+                Browse All Jewellery
               </a>
             </div>
           ) : (
             <>
               {/* Fast Delivery Badge Info */}
-              <div className="bg-blue-50 border-l-4 border-blue-600 p-4 mb-8 rounded-r-lg">
+              <div className="bg-amber-50 border-l-4 border-amber-600 p-4 mb-8 rounded-r-lg">
                 <div className="flex items-center gap-3">
-                  <ZapIcon className="text-blue-600" size={24} />
+                  <ZapIcon className="text-amber-600" size={24} />
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">
-                      Express Shipping Available
+                      Premium Gold Collection
                     </h3>
                     <p className="text-sm text-gray-600">
-                      All products on this page qualify for our fastest delivery service. 
-                      Order now and get it delivered in record time!
+                      All products on this page are made from authentic gold. 
+                      Browse our collection of stunning gold jewelry pieces!
                     </p>
                   </div>
                 </div>

@@ -92,7 +92,7 @@ import { useSelector } from "react-redux"
         ? category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
         : search 
         ? `Search: ${search}`
-        : 'All Products';
+        : 'All Jewellery';
 
     return (
         <div className="min-h-[70vh] mx-6">
@@ -117,7 +117,7 @@ import { useSelector } from "react-redux"
                                 onClick={() => router.push('/shop')}
                                 className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
                             >
-                                View All Products
+                                View All Jewellery
                             </button>
                         </div>
                     )}

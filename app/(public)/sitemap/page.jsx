@@ -12,7 +12,7 @@ export default function SitemapPage() {
       title: 'Shop',
       icon: FiShoppingBag,
       links: [
-        { text: 'All Products', path: '/products' },
+        { text: 'All Jewellery', path: '/products' },
         { text: 'Fast Delivery', path: '/fast-delivery' },
         { text: 'Top Selling', path: '/top-selling' },
         { text: 'New Arrivals', path: '/new' },
