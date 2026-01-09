@@ -1,12 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import GoldRateWidget from '@/components/GoldRateWidget'
-import GoldPriceChart from '@/components/GoldPriceChart'
 import Link from 'next/link'
 
 export default function GoldRatePage() {
-  const [karat, setKarat] = useState(24)
 
   return (
     <div className="max-w-[1250px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
@@ -30,32 +27,6 @@ export default function GoldRatePage() {
       {/* Gold Rate Widget */}
       <div className="mb-8">
         <GoldRateWidget showCalculator={true} />
-      </div>
-
-      {/* Chart Section */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Gold Rate Chart</h2>
-          <div className="inline-flex rounded-lg border overflow-hidden">
-            {[24, 22, 18].map((k) => (
-              <button
-                key={k}
-                onClick={() => setKarat(k)}
-                className={`px-3 py-1.5 text-sm ${
-                  karat === k
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                {k}K
-              </button>
-            ))}
-          </div>
-        </div>
-        <GoldPriceChart karat={karat} currency="AED" />
-        <p className="text-xs text-gray-500 mt-3">
-          Thessah is Dubai's trusted source for gold prices via our fast-loading charts. Whether you're looking to follow the gold rate in Dubai or the global gold spot price today, this week, or historically - we've got it covered.
-        </p>
       </div>
 
       {/* Content Sections */}
