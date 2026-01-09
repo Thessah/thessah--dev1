@@ -117,28 +117,102 @@ function ProductsContent() {
         (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000 ? 1 : 0)
 
     return (
-        <div className="bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 py-8 min-h-[60vh]">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-6">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900">All Jewellery</h1>
-                        <p className="text-gray-600 mt-1">{filteredProducts.length} products found</p>
-                    </div>
+        <div className="bg-white">
+            <div className="max-w-[1400px] mx-auto px-4 py-6">
+                {/* Header with Results Count */}
+                <div className="mb-6">
+                    <h1 className="text-3xl md:text-4xl font-serif text-gray-900 mb-2">
+                        All Jewellery <span className="text-gray-500 text-xl">({filteredProducts.length} results)</span>
+                    </h1>
+                </div>
 
+                {/* Filter Chips & Sort */}
+                <div className="flex flex-wrap items-center gap-3 mb-6 pb-4 border-b">
                     {/* Mobile Filter Toggle */}
                     <button
                         onClick={() => setShowFilters(!showFilters)}
-                        className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50"
+                        className="lg:hidden flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50"
                     >
                         <FilterIcon size={18} />
-                        Filters
+                        Filter
                         {activeFiltersCount > 0 && (
-                            <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+                            <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full ml-1">
                                 {activeFiltersCount}
                             </span>
                         )}
                     </button>
+
+                    {/* Active Filter Chips */}
+                    {filters.categories.map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => toggleCategory(cat)}
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                        >
+                            <span>{cat}</span>
+                            <XIcon size={14} />
+                        </button>
+                    ))}
+                    
+                    {(filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) && (
+                        <button
+                            onClick={() => setFilters(prev => ({ ...prev, priceRange: [0, 100000] }))}
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                        >
+                            <span>AED {filters.priceRange[0].toLocaleString()} - AED {filters.priceRange[1].toLocaleString()}</span>
+                            <XIcon size={14} />
+                        </button>
+                    )}
+
+                    {filters.minRating > 0 && (
+                        <button
+                            onClick={() => setFilters(prev => ({ ...prev, minRating: 0 }))}
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                        >
+                            <span className="flex items-center gap-1">
+                                <StarIcon size={14} className="fill-yellow-400 text-yellow-400" />
+                                {filters.minRating}+ Rating
+                            </span>
+                            <XIcon size={14} />
+                        </button>
+                    )}
+
+                    {filters.inStock && (
+                        <button
+                            onClick={() => setFilters(prev => ({ ...prev, inStock: false }))}
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-full text-sm hover:bg-gray-50"
+                        >
+                            <span>In Stock Only</span>
+                            <XIcon size={14} />
+                        </button>
+                    )}
+
+                    {activeFiltersCount > 0 && (
+                        <button
+                            onClick={clearFilters}
+                            className="text-sm text-orange-600 hover:text-orange-700 font-medium underline"
+                        >
+                            Clear All
+                        </button>
+                    )}
+
+                    {/* Spacer */}
+                    <div className="flex-1"></div>
+
+                    {/* Sort Dropdown */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-600">Sort By:</span>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+                        >
+                            <option value="newest">Best Matches</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Top Rated</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="flex gap-6">
@@ -310,15 +384,29 @@ function ProductsContent() {
                     </aside>
 
                     {/* Products Grid */}
-                    <div className="flex-1">
-                        {filteredProducts.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <main className="flex-1">
+                        {filteredProducts.length === 0 ? (
+                            <div className="text-center py-20">
+                                <div className="text-gray-400 mb-4">
+                                    <FilterIcon size={64} className="mx-auto" />
+                                </div>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
+                                <p className="text-gray-600 mb-6">Try adjusting your filters to see more results</p>
+                                <button
+                                    onClick={clearFilters}
+                                    className="px-6 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 font-medium"
+                                >
+                                    Clear All Filters
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                                 {filteredProducts.map(product => (
-                                    <ProductCard key={product.id} product={product} />
+                                    <ProductCard key={product._id} product={product} />
                                 ))}
                             </div>
                         )}
-                    </div>
+                    </main>
                 </div>
             </div>
         </div>
