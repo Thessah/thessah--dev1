@@ -103,7 +103,7 @@ function OrderSuccessContent() {
       ) : !orders || orders.length === 0 ? (
         <div className='p-8 text-center text-red-600'>Order not found or failed.</div>
       ) : (
-        <div className='min-h-screen bg-gray-50 flex flex-col items-center justify-center py-8'>
+        <div className='min-h-screen bg-white flex flex-col items-center justify-center py-8'>
           <div className='max-w-2xl w-full bg-white rounded-xl shadow p-8'>
             <div className='text-center mb-8'>
               <div className='flex flex-col items-center gap-2'>

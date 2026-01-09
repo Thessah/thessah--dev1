@@ -334,12 +334,12 @@ export default function CheckoutPage() {
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2 text-gray-900">Choose Shipping Method</h2>
               {/* Only one shipping method for now, auto-selected */}
-              <div className="border border-green-400 bg-green-50 rounded-lg p-4 flex items-center justify-between">
+              <div className="border border-gray-300 bg-white rounded-lg p-4 flex items-center justify-between">
                 <div>
-                  <div className="font-semibold text-green-900">{shipping === 0 ? 'Free Shipping' : 'Standard Shipping'}</div>
+                  <div className="font-semibold text-gray-900">{shipping === 0 ? 'Free Shipping' : 'Standard Shipping'}</div>
                   <div className="text-xs text-gray-600">Delivered within {shippingSetting?.estimatedDays || '2-5'} business days</div>
                 </div>
-                <div className="font-bold text-green-900 text-lg">{shipping === 0 ? 'Free' : `AED ${shipping.toLocaleString()}`}</div>
+                <div className="font-bold text-gray-900 text-lg">{shipping === 0 ? 'Free' : `AED ${shipping.toLocaleString()}`}</div>
               </div>
             </div>
             {/* Shipping Details Section */}
