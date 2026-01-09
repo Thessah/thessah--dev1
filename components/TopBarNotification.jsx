@@ -98,7 +98,7 @@ const TopBarNotification = () => {
             <span className="hidden sm:inline">First Order Special:</span>
             <span className="sm:hidden">New Customer:</span>
             {' '}
-            <strong className="text-yellow-300 text-sm md:text-base">₹100 OFF</strong>
+            <strong className="text-yellow-300 text-sm md:text-base">AED 100 OFF</strong>
             {' '}+ Free Shipping
             <span className="hidden md:inline"> on orders above ₹499</span>
           </span>

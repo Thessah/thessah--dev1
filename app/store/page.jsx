@@ -11,7 +11,7 @@ import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 
 export default function Dashboard() {
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || 'AED'
     const router = useRouter()
     const [dashboardData, setDashboardData] = useState({
         totalProducts: 0,

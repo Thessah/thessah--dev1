@@ -13,7 +13,7 @@ export default function HelpCenter() {
     },
     {
       question: 'Do I need to pay shipping / delivery charges?',
-      answer: 'Free shipping is available on orders above ₹999. For orders below this amount, a nominal delivery charge of ₹99 applies. Express shipping options are also available at checkout.'
+      answer: 'Free shipping is available on orders above AED 999. For orders below this amount, a nominal delivery charge of AED 99 applies. Express shipping options are also available at checkout.'
     },
     {
       question: 'Can I send gifts to my loved ones?',
@@ -25,7 +25,7 @@ export default function HelpCenter() {
     },
     {
       question: 'Questions on Cash On Delivery (COD)',
-      answer: 'COD is available for orders up to ₹50,000. A nominal COD handling fee of ₹50 applies. Please keep exact change ready when the delivery executive arrives. COD is not available for international orders.'
+      answer: 'COD is available for orders up to AED 50,000. A nominal COD handling fee of AED 50 applies. Please keep exact change ready when the delivery executive arrives. COD is not available for international orders.'
     },
     {
       question: 'Questions on Tokenization',

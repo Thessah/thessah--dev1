@@ -16,7 +16,7 @@ import GoldRateWidget from './GoldRateWidget';
 const ProductDetails = ({ product, reviews = [] }) => {
   // Assume product loading state from redux if available
   const loading = useSelector(state => state.product?.status === 'loading');
-  const currency = '₹';
+  const currency = 'AED';
   const [mainImage, setMainImage] = useState(product.images?.[0]);
   const [quantity, setQuantity] = useState(1);
   const [isInWishlist, setIsInWishlist] = useState(false);

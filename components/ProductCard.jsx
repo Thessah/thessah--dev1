@@ -13,7 +13,7 @@ import { uploadCart } from '@/lib/features/cart/cartSlice'
 import toast from 'react-hot-toast'
 
 const ProductCard = ({ product }) => {
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || 'AED'
     const dispatch = useDispatch()
     const { getToken } = useAuth()
     const cartItems = useSelector(state => state.cart.cartItems)

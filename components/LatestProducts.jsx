@@ -155,12 +155,12 @@ const ProductCard = ({ product }) => {
           <div className="flex flex-col gap-0.5">
             {Number(product.price) > 0 && (
               <p className="text-sm sm:text-base font-bold text-black">
-                ₹{Number(product.price).toFixed(2)}
+                AED {Number(product.price).toFixed(2)}
               </p>
             )}
             {Number(product.AED) > 0 && Number(product.AED) > Number(product.price) && (
               <p className="text-xs sm:text-sm text-gray-400 line-through">
-                ₹{Number(product.AED).toFixed(2)}
+                AED {Number(product.AED).toFixed(2)}
               </p>
             )}
           </div>

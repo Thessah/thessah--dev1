@@ -187,9 +187,9 @@ export default function WishlistAuthed() {
                           <span className="font-medium text-gray-900 truncate block max-w-[180px] md:max-w-[260px]">{product.name}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
-                          <span className="font-bold text-lg text-gray-900">₹{product.price || 0}</span>
+                          <span className="font-bold text-lg text-gray-900">AED {product.price || 0}</span>
                           {product.AED && (
-                            <span className="text-xs text-gray-400 line-through">₹{product.AED}</span>
+                            <span className="text-xs text-gray-400 line-through">AED {product.AED}</span>
                           )}
                         </div>
                       </div>

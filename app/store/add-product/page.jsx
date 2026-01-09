@@ -482,16 +482,16 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 {/* Pricing */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium mb-1">Regular Price (AED) - ₹</label>
+                        <label className="block text-sm font-medium mb-1">Regular Price (AED)</label>
                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">AED</span>
                             <input type="number" step="0.01" name="AED" value={productInfo.AED} onChange={onChangeHandler} className="w-full border rounded px-3 py-2 pl-14" placeholder="0.00" />
                         </div>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium mb-1">Sale Price - ₹</label>
+                        <label className="block text-sm font-medium mb-1">Sale Price</label>
                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">₹</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-medium">AED</span>
                             <input type="number" step="0.01" name="price" value={productInfo.price} onChange={onChangeHandler} className="w-full border rounded px-3 py-2 pl-14" placeholder="0.00" />
                         </div>
                     </div>
