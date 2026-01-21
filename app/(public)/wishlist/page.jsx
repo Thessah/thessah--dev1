@@ -224,7 +224,7 @@ export default function WishlistAuthed() {
             </div>
             <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
-              <span>₹{total.toFixed(2)}</span>
+              <span>AED{total.toFixed(2)}</span>
             </div>
           </div>
           <button
@@ -242,7 +242,7 @@ export default function WishlistAuthed() {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-xs">{selected.length} selected</p>
-              <p className="font-bold">₹{total.toFixed(2)}</p>
+              <p className="font-bold">AED{total.toFixed(2)}</p>
             </div>
             <button
               onClick={addSelectedToCart}

@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'Terms & Conditions - Thessah Jewellery – Where Elegance Meets Craftsmanship',
+  description: 'Thessah Jewellery offers beautifully crafted designs made to shine forever. Find luxury jewellery pieces perfect for weddings, gifts, and everyday elegance.',
+};
+
 export default function TermsAndConditions() {
   return (
     <div style={{ maxWidth: '1250px' }} className="mx-auto py-12 px-4 text-gray-800">

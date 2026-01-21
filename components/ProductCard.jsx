@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/useAuth";
-import { ShoppingCartIcon } from 'lucide-react'
+import { ShoppingCartIcon, Heart } from 'lucide-react'
 import React, { useState, useRef, useCallback, Suspense } from 'react'
 const StarIcon = React.lazy(() => import('lucide-react').then(mod => ({ default: mod.StarIcon })));
 import Image from 'next/image'
@@ -63,105 +63,80 @@ const ProductCard = ({ product }) => {
         toast.success('Added to cart')
     }
 
-    // Limit product name to 50 characters
-    const displayName = product.name.length > 50 ? product.name.slice(0, 50) + '…' : product.name;
-
     const showPrice = Number(product.price) > 0 || Number(product.AED) > 0;
+
     return (
-        <Link href={`/product/${product.slug}`} className='group w-full'>
+        <Link href={`/product/${product.slug}`} className="group w-full block">
             <div
-                className='bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col h-full relative'
+                className="bg-white rounded-sm overflow-hidden flex flex-col h-full"
                 ref={cardRef}
                 onMouseEnter={handleCardEnter}
                 onFocus={handleCardEnter}
                 tabIndex={0}
             >
-                {/* Product Image */}
-                <div className='relative w-full aspect-square bg-gray-50 overflow-hidden'>
-                    {discount > 0 && (
-                        <span className='absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-sm z-10'>
-                            {discount}% OFF
-                        </span>
-                    )}
-                    {product.fastDelivery && (
-                        <span className='absolute top-3 left-3 bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow-sm z-10'>
-                            Fast
-                        </span>
-                    )}
-                    <Image
-                        src={
-                            product.images && Array.isArray(product.images) && product.images[0] && typeof product.images[0] === 'string' && product.images[0].trim() !== ''
-                                ? product.images[0]
-                                : 'https://ik.imagekit.io/jrstupuke/placeholder.png'
-                        }
-                        alt={product.name}
-                        fill
-                        className='object-cover transition-transform duration-300 group-hover:scale-105'
-                        onError={(e) => {
-                            if (e.currentTarget.src !== 'https://ik.imagekit.io/jrstupuke/placeholder.png') {
-                                e.currentTarget.src = 'https://ik.imagekit.io/jrstupuke/placeholder.png';
+                {/* Product Image with hover swap */}
+                <div className="relative w-full aspect-square bg-gray-50 overflow-hidden">
+                    {/* Main image */}
+                    <div className={`absolute inset-0 transition-all duration-500 ${
+                        product.images && Array.isArray(product.images) && product.images[1] && product.images[1].trim() !== ''
+                            ? 'group-hover:opacity-0'
+                            : 'group-hover:scale-105'
+                    }`}>
+                        <Image
+                            src={
+                                product.images && Array.isArray(product.images) && product.images[0] && typeof product.images[0] === 'string' && product.images[0].trim() !== ''
+                                    ? product.images[0]
+                                    : 'https://ik.imagekit.io/jrstupuke/placeholder.png'
                             }
-                        }}
-                    />
-                </div>
-
-                {/* Product Details */}
-                <div className='flex flex-col p-2 sm:p-2.5'>
-                    {/* Product Name */}
-                    <h3 className='font-semibold text-gray-900 text-xs sm:text-sm leading-tight line-clamp-1 mb-0.5'>
-                        {product.name}
-                    </h3>
-                    
-                    {/* Ratings and Cart Button Row */}
-                    <div className='flex items-center justify-between mb-0.5'>
-                        <div className='flex items-center gap-0.5'>
-                            {ratingCount > 0 ? (
-                                <>
-                                    <div className='flex items-center'>
-                                        <Suspense fallback={null}>
-                                            {Array(5).fill('').map((_, index) => (
-                                                <StarIcon
-                                                    key={index}
-                                                    size={10}
-                                                    className='text-yellow-400'
-                                                    fill={averageRating >= index + 1 ? "#FBBF24" : "none"}
-                                                    stroke={averageRating >= index + 1 ? "#FBBF24" : "#D1D5DB"}
-                                                    strokeWidth={1.5}
-                                                />
-                                            ))}
-                                        </Suspense>
-                                    </div>
-                                    <span className='text-[10px] sm:text-[11px] text-gray-400'>({ratingCount})</span>
-                                </>
-                            ) : (
-                                <span className='text-[10px] sm:text-[11px] text-red-400'>No reviews</span>
-                            )}
-                        </div>
-                        
-                        {/* Cart Button */}
-                        <button 
-                            onClick={handleAddToCart}
-                            className='w-8 h-8 sm:w-9 sm:h-9 bg-slate-700 hover:bg-slate-800 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-200 relative flex-shrink-0'
-                        >
-                            <ShoppingCartIcon className='text-white' size={15} strokeWidth={2} />
-                            {itemQuantity > 0 && (
-                                <span className='absolute -top-1 -right-1 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold min-w-[15px] h-[15px] sm:min-w-[16px] sm:h-[16px] rounded-full flex items-center justify-center shadow-md border-2 border-white px-0.5'>
-                                    {itemQuantity > 99 ? '99+' : itemQuantity}
-                                </span>
-                            )}
-                        </button>
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                            onError={e => {
+                                if (e.currentTarget.src !== 'https://ik.imagekit.io/jrstupuke/placeholder.png') {
+                                    e.currentTarget.src = 'https://ik.imagekit.io/jrstupuke/placeholder.png';
+                                }
+                            }}
+                        />
                     </div>
-                    
+                    {/* Second image on hover - only if exists */}
+                    {product.images && Array.isArray(product.images) && product.images[1] && product.images[1].trim() !== '' && (
+                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <Image
+                                src={product.images[1]}
+                                alt={product.name + ' alt'}
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                    )}
+                    {/* Wishlist Heart Icon */}
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toast.success('Added to wishlist');
+                        }}
+                        className="absolute top-3 right-3 z-20 bg-white hover:bg-gray-50 p-2.5 rounded-full shadow-sm transition-all duration-200"
+                    >
+                        <Heart size={20} className="text-gray-700 hover:text-red-500 hover:fill-red-500 transition-colors" strokeWidth={1.5} />
+                    </button>
+                </div>
+                {/* Product Details */}
+                <div className="flex flex-col p-3 gap-1">
+                    {/* Product Name */}
+                    <h3 className="text-base font-normal text-gray-900 line-clamp-2 leading-snug">{product.name}</h3>
                     {/* Price */}
                     {showPrice && (
-                        <div className='flex items-center gap-1.5'>
-                            {Number(product.price) > 0 && (
-                                <p className='text-sm sm:text-base font-bold text-gray-900'>{currency} {product.price}</p>
-                            )}
-                            {Number(product.AED) > 0 && Number(product.AED) > Number(product.price) && Number(product.price) > 0 && (
-                                <p className='text-[10px] sm:text-xs text-gray-400 line-through'>{currency} {product.AED}</p>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-xl font-semibold text-gray-900">₹ {Number(product.price).toLocaleString('en-IN')}</span>
+                            {Number(product.AED) > 0 && Number(product.AED) > Number(product.price) && (
+                                <span className="text-sm text-gray-400 line-through">₹ {Number(product.AED).toLocaleString('en-IN')}</span>
                             )}
                         </div>
+                    )}
+                    {/* Stock info */}
+                    {product.stockQuantity && product.stockQuantity <= 3 && (
+                        <span className="text-sm text-red-600">Only {product.stockQuantity} left!</span>
                     )}
                 </div>
             </div>

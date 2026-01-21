@@ -2,6 +2,11 @@
 
 import React, { useState } from 'react';
 
+export const metadata = {
+  title: 'Contact Us - Thessah Jewellery – Where Elegance Meets Craftsmanship',
+  description: 'Thessah Jewellery offers beautifully crafted designs made to shine forever. Find luxury jewellery pieces perfect for weddings, gifts, and everyday elegance.',
+};
+
 export default function ContactUs() {
   const [form, setForm] = useState({
     name: '',
@@ -105,19 +110,19 @@ export default function ContactUs() {
         <p className="mb-2">
           <strong>Website:</strong>{' '}
           <a
-            href="https://www.quickfynd.com"
+            href="https://www.thessah.com"
             className="text-orange-600 hover:underline"
           >
-            https://www.quickfynd.com
+            https://www.thessah.com
           </a>
         </p>
         <p className="mb-2">
           <strong>Email:</strong>{' '}
           <a
-            href="mailto:support@quickfynd.com"
+            href="mailto:support@thessah.com"
             className="text-orange-600 hover:underline"
           >
-            support@quickfynd.com
+            support@thessah.com
           </a>
         </p>
         <p className="mb-1">

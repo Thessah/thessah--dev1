@@ -284,7 +284,7 @@ function TrackOrderPageInner() {
                 <div className="mt-4 pt-4 border-t border-slate-200">
                   <div className="flex justify-between text-slate-800 font-semibold">
                     <span>Total:</span>
-                    <span>₹{(order.total || 0).toFixed(2)}</span>
+                    <span>AED{(order.total || 0).toFixed(2)}</span>
                   </div>
                 </div>
               </div>

@@ -22,18 +22,6 @@ const StoreLayout = ({ children }) => {
     const fetchIsSeller = async () => {
         if (!user) return;
         try {
-            // Only allow access to thessahjewellery@gmail.com
-            const allowedEmail = 'thessahjewellery@gmail.com';
-            const isAuthorized = user.email === allowedEmail;
-            
-            if (!isAuthorized) {
-                console.log('[StoreLayout] Unauthorized email:', user.email);
-                setIsSeller(false);
-                setIsAdmin(false);
-                setSellerLoading(false);
-                return;
-            }
-            
             const token = await getToken(true); // Force refresh token
             if (!token) {
                 console.log('[StoreLayout] No token available');
@@ -41,16 +29,24 @@ const StoreLayout = ({ children }) => {
                 return;
             }
             
-            console.log('[StoreLayout] Authorized email - checking store status');
-            const { data } = await axios.get('/api/store/is-seller', { 
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            console.log('[StoreLayout] /api/store/is-seller response:', data);
-            setIsSeller(data.isSeller);
-            setStoreInfo(data.storeInfo);
-            setIsAdmin(true); // This email is the admin
+            console.log('[StoreLayout] User authenticated:', user.email);
+            
+            // Only allow configured admin email
+            const allowedEmail = (process.env.NEXT_PUBLIC_STORE_ADMIN_EMAIL || 'thessahjewellery@gmail.com').toLowerCase();
+            if (user.email?.toLowerCase() !== allowedEmail) {
+                console.log('[StoreLayout] ❌ Access denied for:', user.email);
+                setIsSeller(false);
+                setIsAdmin(false);
+                setSellerLoading(false);
+                return;
+            }
+            
+            console.log('[StoreLayout] ✅ Access granted for:', user.email);
+            setIsSeller(true);
+            setIsAdmin(true);
+            setStoreInfo({ name: 'Thessah Store', status: 'approved' });
         } catch (error) {
-            console.log('[StoreLayout] is-seller error:', error?.response?.data || error.message);
+            console.log('[StoreLayout] Auth error:', error?.message);
             setIsSeller(false);
         } finally {
             setSellerLoading(false);
@@ -68,9 +64,9 @@ const StoreLayout = ({ children }) => {
     ) : !user ? (
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
             <h1 className="text-2xl sm:text-4xl font-semibold text-slate-400">Authentication Required</h1>
-            <p className="text-slate-500 mt-4 mb-8">Please sign in to access the store dashboard</p>
-            <Link href="/" className="bg-slate-700 text-white flex items-center gap-2 mt-4 p-2 px-6 max-sm:text-sm rounded-full">
-                Go to home <ArrowRightIcon size={18} />
+            <p className="text-slate-500 mt-4 mb-8">Please sign in with the authorized email to access the store dashboard.</p>
+            <Link href="/login" className="bg-slate-700 text-white flex items-center gap-2 mt-4 p-2 px-6 max-sm:text-sm rounded-full">
+                Go to login <ArrowRightIcon size={18} />
             </Link>
         </div>
     ) : (isSeller || isAdmin) ? (
@@ -86,9 +82,19 @@ const StoreLayout = ({ children }) => {
     ) : (
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
             <h1 className="text-2xl sm:text-4xl font-semibold text-slate-400">Access Restricted</h1>
-            <p className="text-slate-500 mt-4 mb-6">This dashboard is only accessible to the store owner (thessahjewellery@gmail.com)</p>
+            <p className="text-slate-500 mt-4 mb-2">
+                This store dashboard is only accessible to:
+            </p>
+            <p className="text-lg font-semibold text-red-600 mb-4">
+                {(process.env.NEXT_PUBLIC_STORE_ADMIN_EMAIL || 'thessahjewellery@gmail.com')}
+            </p>
+            {user?.email && (
+                <p className="text-sm text-slate-500 mb-6">
+                    You are signed in as: <span className="font-medium">{user.email}</span>
+                </p>
+            )}
             <Link href="/" className="bg-slate-700 text-white flex items-center gap-2 mt-4 p-2 px-6 max-sm:text-sm rounded-full">
-                Go to home <ArrowRightIcon size={18} />
+                Go to Home <ArrowRightIcon size={18} />
             </Link>
         </div>
     )

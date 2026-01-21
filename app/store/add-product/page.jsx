@@ -86,12 +86,13 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
         price: "",
         category: "",
         sku: "",
-        stockQuantity: 0,
+        stockQuantity: '',
         colors: [],
         sizes: [],
         fastDelivery: false,
         allowReturn: true,
         allowReplacement: true,
+        enquiryOnly: false,
         reviews: [],
         badges: [], // Array of badge labels like "Price Lower Than Usual", "Hot Deal", etc.
         tags: []
@@ -188,7 +189,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 price: product.price || "",
                 category: product.category || "",
                 sku: product.sku || "",
-                stockQuantity: product.stockQuantity || 0,
+                stockQuantity: product.stockQuantity ?? '',
                 colors: product.colors || [],
                 sizes: product.sizes || [],
                 fastDelivery: product.fastDelivery || false,
@@ -379,7 +380,16 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                 formData.append('productId', product._id)
             }
 
-            const token = await getToken()
+            let token = await getToken()
+            // Retry once with forceRefresh to handle expired tokens
+            if (!token) {
+                token = await getToken(true)
+            }
+            if (!token) {
+                toast.error('Authentication required. Please sign in again.')
+                setLoading(false)
+                return
+            }
             const apiCall = product
                 ? axios.put(`/api/store/product`, formData, { headers: { Authorization: `Bearer ${token}` } })
                 : axios.post('/api/store/product', formData, { headers: { Authorization: `Bearer ${token}` } })
@@ -400,6 +410,32 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
         } finally {
             setLoading(false)
         }
+    }
+
+    if (authLoading) {
+        return (
+            <div className="flex min-h-[40vh] items-center justify-center text-sm text-gray-600">
+                Checking session...
+            </div>
+        )
+    }
+
+    if (!user) {
+        return (
+            <div className="flex min-h-[40vh] items-center justify-center">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-6 py-4 text-center shadow-sm">
+                    <p className="text-sm font-semibold text-amber-800">Session expired. Please sign in again to add products.</p>
+                    <div className="mt-3 flex justify-center">
+                        <button
+                            onClick={() => router.push('/login')}
+                            className="rounded-md bg-amber-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-600"
+                        >
+                            Go to Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
     }
 
     return (
@@ -460,7 +496,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                         <input 
                             type="number" 
                             name="stockQuantity" 
-                            value={productInfo.stockQuantity || 0} 
+                            value={productInfo.stockQuantity ?? ''} 
                             onChange={onChangeHandler} 
                             className="w-full border rounded px-3 py-2" 
                             placeholder="Available stock quantity" 
@@ -479,6 +515,10 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                         <label className="inline-flex items-center gap-2">
                             <input type="checkbox" checked={productInfo.allowReplacement} onChange={(e)=> setProductInfo(p=>({...p, allowReplacement: e.target.checked}))} />
                             <span className="text-sm font-medium">Allow Replacement (7 days after delivery)</span>
+                        </label>
+                        <label className="inline-flex items-center gap-2">
+                            <input type="checkbox" checked={productInfo.enquiryOnly} onChange={(e)=> setProductInfo(p=>({...p, enquiryOnly: e.target.checked}))} />
+                            <span className="text-sm font-medium">Enable Enquiry Only (disable direct ordering for this product)</span>
                         </label>
                     </div>
                 </div>
@@ -766,8 +806,8 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                             <div className="grid grid-cols-7 gap-2 font-medium text-sm text-gray-700">
                                 <div>Label</div>
                                 <div>Qty</div>
-                                <div>Price (₹)</div>
-                                <div>AED (₹)</div>
+                                <div>Price (AED)</div>
+                                <div>AED (AED)</div>
                                 <div>Stock</div>
                                 <div>Tag</div>
                                 <div></div>
@@ -781,9 +821,9 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                             onChange={(e)=>{
                                                 const v=[...bulkOptions]; v[idx] = { ...b, qty: Number(e.target.value) }; setBulkOptions(v)
                                             }} />
-                                        <input className="border rounded px-2 py-1" type="number" step="0.01" placeholder="₹" value={b.price}
+                                        <input className="border rounded px-2 py-1" type="number" step="0.01" placeholder="AED" value={b.price}
                                             onChange={(e)=>{ const v=[...bulkOptions]; v[idx] = { ...b, price: e.target.value }; setBulkOptions(v)}} />
-                                        <input className="border rounded px-2 py-1" type="number" step="0.01" placeholder="₹" value={b.AED}
+                                        <input className="border rounded px-2 py-1" type="number" step="0.01" placeholder="AED" value={b.AED}
                                             onChange={(e)=>{ const v=[...bulkOptions]; v[idx] = { ...b, AED: e.target.value }; setBulkOptions(v)}} />
                                         <input className="border rounded px-2 py-1" type="number" placeholder="Stock" value={b.stock}
                                             onChange={(e)=>{ const v=[...bulkOptions]; v[idx] = { ...b, stock: Number(e.target.value) }; setBulkOptions(v)}} />
@@ -879,7 +919,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                         {/* Pricing */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">Price (₹)</label>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Price (AED)</label>
                                                 <input className="w-full border rounded px-3 py-2" placeholder="0.00" type="number" step="0.01"
                                                     value={v.price ?? ''}
                                                     onChange={(e)=>{
@@ -887,7 +927,7 @@ export default function ProductForm({ product = null, onClose, onSubmitSuccess }
                                                     }} />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-600 mb-1">AED (₹)</label>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">AED (AED)</label>
                                                 <input className="w-full border rounded px-3 py-2" placeholder="0.00" type="number" step="0.01"
                                                     value={v.AED ?? ''}
                                                     onChange={(e)=>{

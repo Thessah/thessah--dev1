@@ -1,6 +1,11 @@
-'use client'
+'use client';
 
-import Image from 'next/image'
+import Image from 'next/image';
+
+export const metadata = {
+  title: 'About Thessah - Thessah Jewellery – Where Elegance Meets Craftsmanship',
+  description: 'Thessah Jewellery offers beautifully crafted designs made to shine forever. Find luxury jewellery pieces perfect for weddings, gifts, and everyday elegance.',
+};
 
 export default function AboutPage() {
   const sections = [

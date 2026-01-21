@@ -12,7 +12,7 @@ export default function PromotionBanner() {
       titleColor: '#dc2626',
       subtitle: "Breathtaking gifts for your loved one's",
       subtitleColor: '#374151',
-      price: 'STARTING AT ₹10,000',
+      price: 'STARTING AT AED10,000',
       priceColor: '#dc2626',
       buttonText: 'Explore Now',
       buttonLink: '/shop?collection=gifts',

@@ -559,16 +559,16 @@ export default function CheckoutPage() {
           <h2 className="font-bold text-lg mb-2 text-gray-900">Order details</h2>
           <div className="flex justify-between text-sm text-gray-900 mb-2">
             <span>Items</span>
-            <span>₹ {subtotal.toLocaleString()}</span>
+            <span>AED{subtotal.toLocaleString()}</span>
           </div>
           <div className="flex justify-between text-sm text-gray-900 mb-2">
             <span>Shipping &amp; handling</span>
-            <span>{shipping > 0 ? `₹ ${shipping.toLocaleString()}` : '₹ 0'}</span>
+            <span>{shipping > 0 ? `AED${shipping.toLocaleString()}` : 'AED0'}</span>
           </div>
           <hr className="my-2" />
           <div className="flex justify-between font-bold text-base text-gray-900 mb-4">
             <span>Total</span>
-            <span>₹ {total.toLocaleString()}</span>
+            <span>AED{total.toLocaleString()}</span>
           </div>
           <button
             type="submit"

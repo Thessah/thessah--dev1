@@ -90,7 +90,7 @@ export default function DashboardOrdersPage() {
                           </div>
                           <div>
                             <p className="text-xs text-slate-500">Total</p>
-                            <p className="text-sm font-semibold text-slate-800">₹{(order.total || 0).toFixed(2)}</p>
+                            <p className="text-sm font-semibold text-slate-800">AED{(order.total || 0).toFixed(2)}</p>
                           </div>
                           <div>
                             <p className="text-xs text-slate-500">Status</p>
@@ -194,10 +194,10 @@ export default function DashboardOrdersPage() {
                                   <div className="flex-1 min-w-0">
                                     <h4 className="font-medium text-slate-800 truncate">{product.name || 'Product'}</h4>
                                     <p className="text-sm text-slate-600 mt-1">Quantity: {item.quantity}</p>
-                                    <p className="text-sm text-slate-600">Price: ₹{(item.price || 0).toFixed(2)}</p>
+                                    <p className="text-sm text-slate-600">Price: AED{(item.price || 0).toFixed(2)}</p>
                                   </div>
                                   <div className="text-right">
-                                    <p className="font-semibold text-slate-800">₹{((item.price || 0) * (item.quantity || 0)).toFixed(2)}</p>
+                                    <p className="font-semibold text-slate-800">AED{((item.price || 0) * (item.quantity || 0)).toFixed(2)}</p>
                                   </div>
                                 </div>
                               )
@@ -271,23 +271,23 @@ export default function DashboardOrdersPage() {
                         <div className="border-t border-slate-200 pt-4">
                           <div className="flex justify-between text-sm mb-2">
                             <span className="text-slate-600">Subtotal:</span>
-                            <span className="text-slate-800">₹{((order.total || 0) - (order.shippingFee || 0)).toFixed(2)}</span>
+                            <span className="text-slate-800">AED{((order.total || 0) - (order.shippingFee || 0)).toFixed(2)}</span>
                           </div>
                           {order.shippingFee > 0 && (
                             <div className="flex justify-between text-sm mb-2">
                               <span className="text-slate-600">Shipping:</span>
-                              <span className="text-slate-800">₹{(order.shippingFee || 0).toFixed(2)}</span>
+                              <span className="text-slate-800">AED{(order.shippingFee || 0).toFixed(2)}</span>
                             </div>
                           )}
                           {order.isCouponUsed && (
                             <div className="flex justify-between text-sm mb-2">
                               <span className="text-green-600">Discount Applied:</span>
-                              <span className="text-green-600">-₹{(order.coupon?.discount || 0).toFixed(2)}</span>
+                              <span className="text-green-600">-AED{(order.coupon?.discount || 0).toFixed(2)}</span>
                             </div>
                           )}
                           <div className="flex justify-between font-semibold text-slate-800 pt-2 border-t border-slate-200">
                             <span>Total:</span>
-                            <span>₹{(order.total || 0).toFixed(2)}</span>
+                            <span>AED{(order.total || 0).toFixed(2)}</span>
                           </div>
                           <div className="mt-2 text-sm">
                             <span className="text-slate-600">Payment: </span>

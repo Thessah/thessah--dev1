@@ -36,8 +36,8 @@ export default function FastDeliveryPage() {
   return (
     <>
       <PageTitle title="Gold Jewellery" />
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white -mt-12">
-        {/* Header Section */}
+      <div className="bg-gradient-to-b from-amber-50 to-white -mt-12 min-h-[50vh]">
+ 
         <div className="bg-gradient-to-r from-amber-600 to-yellow-600 text-white py-12 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -53,7 +53,7 @@ export default function FastDeliveryPage() {
           </div>
         </div>
 
-        {/* Products Grid */}
+       
         <div className="max-w-7xl mx-auto px-4 py-12">
           {error ? (
             <div className="text-center py-16">
@@ -83,7 +83,7 @@ export default function FastDeliveryPage() {
             </div>
           ) : (
             <>
-              {/* Fast Delivery Badge Info */}
+          
               <div className="bg-amber-50 border-l-4 border-amber-600 p-4 mb-8 rounded-r-lg">
                 <div className="flex items-center gap-3">
                   <ZapIcon className="text-amber-600" size={24} />
@@ -99,7 +99,7 @@ export default function FastDeliveryPage() {
                 </div>
               </div>
 
-              {/* Products Grid */}
+             
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {products.map((product) => (
                   <ProductCard key={product._id} product={product} />

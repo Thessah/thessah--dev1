@@ -58,27 +58,51 @@ export default function Dashboard() {
                             console.log('[Dashboard] User authenticated:', user.uid);
                             
                             try {
-                                const token = await user.getIdToken();
-                                console.log('[Dashboard] Token obtained:', token.substring(0, 20) + '...');
-                                
-                                const response = await axios.get('/api/store/dashboard', { 
-                                    timeout: 5000,
-                                    headers: {
-                                        Authorization: `Bearer ${token}`
+                                const callDashboard = async (idToken) => {
+                                    console.log('[Dashboard] Token obtained:', idToken.substring(0, 20) + '...');
+                                    return axios.get('/api/store/dashboard', {
+                                        timeout: 5000,
+                                        headers: {
+                                            Authorization: `Bearer ${idToken}`
+                                        }
+                                    });
+                                };
+
+                                let token = await user.getIdToken();
+                                let response;
+                                try {
+                                    response = await callDashboard(token);
+                                } catch (tokenError) {
+                                    // Retry once with a forced refresh if the token was rejected
+                                    if (tokenError.response?.status === 401) {
+                                        try {
+                                            const freshToken = await user.getIdToken(true);
+                                            response = await callDashboard(freshToken);
+                                        } catch (retryError) {
+                                            console.error('[Dashboard] Retry after refresh failed:', retryError.message);
+                                            console.error('[Dashboard] Retry error response:', retryError.response?.status, retryError.response?.data);
+                                            // Don't throw - just log and continue with empty data
+                                            response = null;
+                                        }
+                                    } else {
+                                        throw tokenError;
                                     }
-                                });
-                                
-                                console.log('[Dashboard] API Response:', response.status, response.data);
-                                
-                                if (response.data?.dashboardData) {
-                                    console.log('[Dashboard] Setting dashboard data');
-                                    setDashboardData(response.data.dashboardData);
-                                } else if (response.data) {
-                                    console.log('[Dashboard] Using fallback data:', response.data);
+                                }
+
+                                if (response) {
+                                    console.log('[Dashboard] API Response:', response.status, response.data);
+                                    
+                                    if (response.data?.dashboardData) {
+                                        console.log('[Dashboard] Setting dashboard data');
+                                        setDashboardData(response.data.dashboardData);
+                                    } else if (response.data) {
+                                        console.log('[Dashboard] Using fallback data:', response.data);
+                                    }
                                 }
                             } catch (tokenError) {
                                 console.error('[Dashboard] Token or API error:', tokenError.message);
                                 console.error('[Dashboard] Error response:', tokenError.response?.status, tokenError.response?.data);
+                                // Just set defaults without redirecting - dashboard will show empty state
                                 setDashboardData({
                                     ratings: [],
                                     totalOrders: 0,

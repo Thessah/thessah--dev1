@@ -52,11 +52,11 @@ export default function ProductSection({ title, products, viewAllLink }) {
                                                             <div className="flex items-center gap-2">
                                                                 {/* Show sale price if > 0 */}
                                                                 {Number(product.price) > 0 && (
-                                                                    <span className="text-sm font-bold text-gray-900">₹ {product.price}</span>
+                                                                    <span className="text-sm font-bold text-gray-900">AED{product.price}</span>
                                                                 )}
                                                                 {/* Show regular price only if > 0, greater than price, and price > 0 */}
                                                                 {Number(product.AED) > 0 && Number(product.AED) > Number(product.price) && Number(product.price) > 0 && (
-                                                                    <span className="text-xs text-gray-500 line-through">₹ {product.AED}</span>
+                                                                    <span className="text-xs text-gray-500 line-through">AED{product.AED}</span>
                                                                 )}
                                                             </div>
                                                         )}

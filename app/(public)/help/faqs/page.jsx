@@ -52,10 +52,10 @@ export default function FAQsPage() {
             <p className="font-medium text-slate-900">Call Us At</p>
             <p className="text-xs text-slate-600">1800-266-0123</p>
           </a>
-          <a href="mailto:support@quickfynd.com" className="border rounded-xl p-4 text-center hover:shadow-sm">
+          <a href="mailto:support@thessah.com" className="border rounded-xl p-4 text-center hover:shadow-sm">
             <div className="mx-auto w-10 h-10 rounded-full bg-[#008C6D]/10 flex items-center justify-center mb-2"><span className="text-[#008C6D]">✉️</span></div>
             <p className="font-medium text-slate-900">Write to Us</p>
-            <p className="text-xs text-slate-600">support@quickfynd.com</p>
+            <p className="text-xs text-slate-600">support@thessah.com</p>
           </a>
         </div>
         <p className="text-center text-xs text-slate-500 mb-10">The toll-free number applies to domestic orders within India. International customers may use WhatsApp, chat, or email.</p>

@@ -20,7 +20,23 @@ export async function GET(request) {
             return NextResponse.json({ isSeller: false, reason: 'invalid-token' }, { status: 200 });
         }
         const userId = decodedToken.uid;
-        console.log('[is-seller API] Checking seller status for userId:', userId);
+        const userEmail = decodedToken.email;
+        console.log('[is-seller API] Checking seller status for:', userEmail);
+
+        // Allow admin email without Store record
+        const allowedEmail = (process.env.NEXT_PUBLIC_STORE_ADMIN_EMAIL || process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'thessahjewellery@gmail.com').toLowerCase();
+        if (userEmail?.toLowerCase() === allowedEmail) {
+            console.log('[is-seller API] ✅ Authorized email, granting access without Store check');
+            return NextResponse.json({ 
+                isSeller: true, 
+                isAdmin: true,
+                storeInfo: { name: 'Thessah Store', status: 'approved' }, 
+                userId 
+            });
+        }
+
+        // For other users, check Store record
+        console.log('[is-seller API] Checking Store record for:', userId);
         const sellerResult = await authSeller(userId);
         console.log('[is-seller API] authSeller result:', sellerResult);
         if(!sellerResult){

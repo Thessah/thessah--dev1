@@ -65,10 +65,10 @@ const Footer = () => {
     const ChatIcon = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>)
 
     const socialIcons = [
-        { icon: InstagramIcon, link: "https://www.instagram.com/quickfynd/" },
-        { icon: TwitterIcon, link: "https://twitter.com/quickfynd" },
+        { icon: InstagramIcon, link: "https://www.instagram.com/thessah/" },
+        { icon: TwitterIcon, link: "https://twitter.com/thessah" },
         { icon: FacebookIcon, link: "https://www.facebook.com/profile.php?id=61584513867192" },
-        { icon: YoutubeIcon, link: "https://www.youtube.com/@quickfynd" },
+        { icon: YoutubeIcon, link: "https://www.youtube.com/@thessah" },
     ];
 
     const paymentIcons = ['VISA', 'Mastercard', 'Maestro', 'PayPal', 'Diners Club', 'American Express'];

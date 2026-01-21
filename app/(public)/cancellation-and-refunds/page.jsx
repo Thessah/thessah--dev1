@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'Cancellation & Refund Policy - Thessah Jewellery – Where Elegance Meets Craftsmanship',
+  description: 'Thessah Jewellery offers beautifully crafted designs made to shine forever. Find luxury jewellery pieces perfect for weddings, gifts, and everyday elegance.',
+};
+
 export default function CancellationAndRefunds() {
   return (
     <div className="max-w-3xl mx-auto py-12 px-4">
@@ -5,8 +10,8 @@ export default function CancellationAndRefunds() {
 
       <p className="mb-4">
         This Cancellation & Refund Policy applies to all purchases made on
-        <strong> QuickFynd.com</strong>, which is owned and operated by
-        <strong> Nilaas</strong>. QuickFynd is an e-commerce platform delivering
+        <strong> Thessah.com</strong>, which is owned and operated by
+        <strong> Nilaas</strong>. Thessah is an e-commerce platform delivering
         products across Kerala, India.
       </p>
 
@@ -86,13 +91,13 @@ export default function CancellationAndRefunds() {
       </p>
 
       <p className="mb-1">
-        <strong>Business Name:</strong> Nilaas
+        <strong>Business Name:</strong> Thessah
       </p>
       <p className="mb-1">
-        <strong>Email:</strong> support@quickfynd.com
+        <strong>Email:</strong> support@thessah.com
       </p>
       <p className="mb-1">
-        <strong>Website:</strong> https://www.quickfynd.com
+        <strong>Website:</strong> https://www.thessah.com
       </p>
 
       <p className="text-sm text-gray-600 mt-6">

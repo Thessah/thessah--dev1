@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { FiShoppingBag, FiUsers, FiFileText, FiInfo, FiTruck, FiStar, FiPackage, FiGrid, FiTag } from 'react-icons/fi';
 
 export const metadata = {
-  title: 'Sitemap - QuickFynd',
-  description: 'Browse all pages and sections of QuickFynd',
+  title: 'Sitemap - Thessah Jewellery – Where Elegance Meets Craftsmanship',
+  description: 'Thessah Jewellery offers beautifully crafted designs made to shine forever. Find luxury jewellery pieces perfect for weddings, gifts, and everyday elegance.',
 };
 
 export default function SitemapPage() {
@@ -60,7 +60,7 @@ export default function SitemapPage() {
       ]
     },
     {
-      title: 'About QuickFynd',
+      title: 'About Thessah',
       icon: FiInfo,
       links: [
         { text: 'About Us', path: '/about' },
@@ -81,7 +81,7 @@ export default function SitemapPage() {
             <h1 className="text-4xl md:text-5xl font-bold">Sitemap</h1>
           </div>
           <p className="text-blue-100 text-lg max-w-2xl">
-            Find all pages and sections of QuickFynd in one place. Navigate easily to any part of our platform.
+            Find all pages and sections of Thessah in one place. Navigate easily to any part of our platform.
           </p>
         </div>
       </div>

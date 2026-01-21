@@ -31,19 +31,19 @@ export default function PaymentSummaryPage() {
     {
       id: 'card',
       name: 'Pay by Card',
-      fee: 'Processing Fees: ₹0.00',
+      fee: 'Processing Fees: AED0.00',
       icon: '💳',
     },
     {
       id: 'tabby',
       name: 'TABBY - FREE INSTALLMENT DEBIT CARD ACCEPTED',
-      fee: 'Processing Fees: ₹0.00',
+      fee: 'Processing Fees: AED0.00',
       icon: '🏷️',
     },
     {
       id: 'tamara',
       name: 'TAMARA - FREE INSTALLMENT DEBIT CARD ACCEPTED',
-      fee: 'Processing Fees: ₹0.00',
+      fee: 'Processing Fees: AED0.00',
       icon: '🏷️',
     },
   ];
@@ -147,15 +147,15 @@ export default function PaymentSummaryPage() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-gray-700">
                     <span>Subtotal</span>
-                    <span className="font-semibold">₹ {subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">AED{subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-gray-700">
                     <span>Processing Fee</span>
-                    <span className="font-semibold">₹ {processingFee.toFixed(2)}</span>
+                    <span className="font-semibold">AED{processingFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-green-600">
                     <span>Promotion Discount</span>
-                    <span className="font-semibold">-5% OFF ₹ {discount.toFixed(2)}</span>
+                    <span className="font-semibold">-5% OFF AED{discount.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -166,7 +166,7 @@ export default function PaymentSummaryPage() {
                 <div className="mb-6">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Total (Inc. of VAT)</span>
-                    <span className="text-2xl font-bold text-gray-900">₹{total.toFixed(2)}</span>
+                    <span className="text-2xl font-bold text-gray-900">AED{total.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -175,7 +175,7 @@ export default function PaymentSummaryPage() {
                   <CheckCircle size={20} className="text-green-500" />
                   <div>
                     <div className="font-semibold text-gray-900">Your Total Savings</div>
-                    <div className="text-green-600 font-bold">₹ {discount.toFixed(2)}</div>
+                    <div className="text-green-600 font-bold">AED{discount.toFixed(2)}</div>
                   </div>
                 </div>
 
@@ -185,7 +185,7 @@ export default function PaymentSummaryPage() {
                   className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-3 px-4 rounded-lg transition-colors mb-4 flex items-center justify-center gap-2"
                 >
                   <span>💳</span>
-                  Pay Now ₹{total.toFixed(2)}
+                  Pay Now AED{total.toFixed(2)}
                 </button>
 
                 {/* Security Info */}

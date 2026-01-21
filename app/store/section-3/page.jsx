@@ -371,7 +371,7 @@ export default function Section3Settings() {
                       />
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-gray-900 truncate">{product.name}</h4>
-                        <p className="text-sm text-gray-500">₹{product.price}</p>
+                        <p className="text-sm text-gray-500">AED{product.price}</p>
                       </div>
                     </div>
                   </div>
@@ -410,7 +410,7 @@ export default function Section3Settings() {
                           />
                         )}
                         <h4 className="font-medium text-gray-900 truncate">{product.name}</h4>
-                        <p className="text-sm text-gray-500">₹{product.price}</p>
+                        <p className="text-sm text-gray-500">AED{product.price}</p>
                       </div>
                     ))}
                 </div>

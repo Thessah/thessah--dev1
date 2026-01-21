@@ -64,10 +64,10 @@ The form provides 3 default rows, but you can customize:
 #### How Savings Are Calculated
 - Savings = (AED × Qty) - Price
 - Example: Bundle of 2
-  - AED per item: ₹ 250
-  - Total AED: ₹ 500
-  - Bundle Price: ₹ 169
-  - **You Save: ₹ 331**
+  - AED per item: AED250
+  - Total AED: AED500
+  - Bundle Price: AED169
+  - **You Save: AED331**
 
 ---
 

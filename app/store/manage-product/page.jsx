@@ -20,7 +20,7 @@ export default function StoreManageProducts() {
 
     const { user, getToken } = useAuth();
 
-    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || '₹'
+    const currency = process.env.NEXT_PUBLIC_CURRENCY_SYMBOL || 'AED'
 
     const [loading, setLoading] = useState(true)
     const [products, setProducts] = useState([])
@@ -112,6 +112,7 @@ export default function StoreManageProducts() {
                         <th className="px-4 py-3 hidden md:table-cell">Description</th>
                         <th className="px-4 py-3 hidden md:table-cell">AED</th>
                         <th className="px-4 py-3">Price</th>
+                        <th className="px-4 py-3">Category</th>
                         <th className="px-4 py-3 hidden sm:table-cell">Fast Delivery</th>
                         <th className="px-4 py-3">Stock</th>
                         <th className="px-4 py-3">Actions</th>
@@ -132,6 +133,7 @@ export default function StoreManageProducts() {
                             </td>
                             <td className="px-4 py-3 hidden md:table-cell">{currency} {product.AED.toLocaleString()}</td>
                             <td className="px-4 py-3">{currency} {product.price.toLocaleString()}</td>
+                            <td className="px-4 py-3">{product.category || '-'}</td>
                             <td className="px-4 py-3 hidden sm:table-cell">
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input 

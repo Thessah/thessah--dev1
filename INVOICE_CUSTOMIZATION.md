@@ -7,7 +7,7 @@ Your invoice now includes:
 ### 1. **Header Section (Blue Background)**
 - Company Name: "Qui" (You can change this)
 - Company Address: Dubai, UAE
-- Contact: info@QuickFynd.com
+- Contact: info@Thessah.com
 - Invoice Number: Auto-generated from Order ID
 
 ### 2. **Bill To Section (Blue Header)**
@@ -26,7 +26,7 @@ Your invoice now includes:
 
 ### 5. **Totals Section (Gray Box)**
 - Subtotal
-- Shipping (₹5)
+- Shipping (AED5)
 - Discount (if coupon applied - shown in green)
 - Grand Total (Blue box with white text)
 
@@ -66,7 +66,7 @@ In `lib/generateInvoice.js`, find these lines (around line 18-20):
 ```javascript
 doc.text('Qui', 14, 28);
 doc.text('Dubai, UAE', 14, 33);
-doc.text('Email: info@QuickFynd.com', 14, 38);
+doc.text('Email: info@Thessah.com', 14, 38);
 ```
 
 Replace with your actual company information.
@@ -124,7 +124,7 @@ doc.text('Authorized Signature', 165, 285, { align: 'center' });
 // At the top of generateInvoice function, after creating doc:
 export const generateInvoice = (order) => {
     const doc = new jsPDF();
-    const currency = '₹';
+    const currency = 'AED';
     
     // Company Header with Logo
     doc.setFillColor(37, 99, 235);

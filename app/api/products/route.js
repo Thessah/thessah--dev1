@@ -64,7 +64,7 @@ export async function GET(request){
         const q = searchParams.get('q');
         
         // Build query
-        const query = { inStock: true };
+        const query = {};
         if (fastDelivery === 'true') {
             query.fastDelivery = true;
         }
@@ -96,6 +96,9 @@ export async function GET(request){
             .limit(limit)
             .lean()
             .exec();
+
+        // DEBUG: Log all products to help diagnose missing products
+        console.log('[API /api/products] Products returned:', products.map(p => ({ name: p.name, category: p.category, slug: p.slug })));
 
         // Add discount label and review stats if applicable
         const Rating = require('@/models/Rating');

@@ -14,14 +14,14 @@ export default function SupportBar() {
             <InfoIcon size={24} className="text-gray-400" />
             <div className="flex flex-col">
               <span className="text-xs text-gray-500 uppercase font-medium tracking-wide">Help Center</span>
-              <a href="https://help.quickfynd.com" className="font-bold text-base text-gray-800 hover:underline leading-tight" target="_blank" rel="noopener noreferrer">help.quickfynd.com</a>
+              <a href="https://help.thessah.com" className="font-bold text-base text-gray-800 hover:underline leading-tight" target="_blank" rel="noopener noreferrer">help.thessah.com</a>
             </div>
           </div>
           <div className="flex items-center gap-3 px-4 py-2 rounded-lg">
             <MailIcon size={24} className="text-gray-400" />
             <div className="flex flex-col">
               <span className="text-xs text-gray-500 uppercase font-medium tracking-wide">Email Support</span>
-              <a href="mailto:care@quickfynd.com" className="font-bold text-base text-gray-800 hover:underline leading-tight">care@quickfynd.com</a>
+              <a href="mailto:care@thessah.com" className="font-bold text-base text-gray-800 hover:underline leading-tight">care@thessah.com</a>
             </div>
           </div>
         </div>

@@ -601,7 +601,7 @@ const Navbar = () => {
                       }, 200);
                     }}
                   >
-                    <button className="text-sm font-medium text-gray-700 hover:text-red-600 transition flex items-center gap-1">
+                    <button className="text-sm font-medium text-gray-700 hover:text-red-600 transition flex items-center gap-1 hover:underline underline-offset-8 decoration-2 decoration-red-500">
                       {item.name}
                       <svg className={`w-4 h-4 transition-transform ${categoriesDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -679,7 +679,7 @@ const Navbar = () => {
                 <Link
                   key={index}
                   href={item.link || '#'}
-                  className="text-sm font-medium text-gray-700 hover:text-red-600 transition"
+                  className="text-sm font-medium text-gray-700 hover:text-red-600 transition hover:underline underline-offset-8 decoration-2 decoration-red-500"
                 >
                   {item.name}
                 </Link>

@@ -1,31 +1,23 @@
 "use client";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import ProductCard from "@/components/ProductCard"
-import { MoveLeftIcon } from "lucide-react"
+import { MoveLeftIcon, FilterIcon, XIcon } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useSelector } from "react-redux"
 
  function ShopContent() {
-    // get query params ?search=abc
     const searchParams = useSearchParams();
     const search = searchParams.get('search');
     const category = searchParams.get('category');
     const router = useRouter();
     const products = useSelector(state => state.product.list);
-
-    // Debug: Log AI keyword and product names
-    useEffect(() => {
-        if (search && products?.length) {
-            console.log('AI keyword:', search);
-            console.log('Product names:', products.map(p => p.name));
-            // Log Levenshtein scores for each product
-            const searchTerm = search.toLowerCase();
-            products.forEach(product => {
-                const score = levenshtein(product.name.toLowerCase(), searchTerm);
-                console.log(`Product: ${product.name}, Score: ${score}`);
-            });
-        }
-    }, [search, products]);
+    const [filters, setFilters] = useState({
+        priceRange: [0, 100000],
+        categories: category ? [category] : [],
+        inStock: false
+    });
+    const [sortBy, setSortBy] = useState('newest');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Fuzzy match helper (Levenshtein distance)
     function levenshtein(a, b) {
@@ -45,48 +37,37 @@ import { useSelector } from "react-redux"
       return matrix[a.length][b.length];
     }
 
-    let filteredProducts = products.filter(product => {
-        // Fuzzy match for search
-        if (search) {
-            const productName = product.name.toLowerCase();
-            const searchTerm = search.toLowerCase();
-            // Substring match or Levenshtein distance <= 2
-            if (!productName.includes(searchTerm) && levenshtein(productName, searchTerm) > 2) {
-                return false;
-            }
-        }
-        // ...existing code for category matching...
-        if (category) {
-            const productCategory = product.category?.toLowerCase() || '';
-            const categorySlug = category.toLowerCase();
-            // Convert both to comparable formats
-            const productCategorySlug = productCategory.replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-            const productCategoryWords = productCategory.replace(/[^\w\s]/g, '').split(/\s+/);
-            const searchWords = categorySlug.split('-');
-            // Match if: exact slug match OR category contains all search words OR search is contained in category
-            const exactMatch = productCategorySlug === categorySlug;
-            const containsAllWords = searchWords.every(word => 
-                productCategoryWords.some(catWord => catWord.includes(word) || word.includes(catWord))
-            );
-            const partialMatch = productCategory.includes(categorySlug.replace(/-/g, ' ')) || 
-                                 categorySlug.replace(/-/g, ' ').includes(productCategory);
-            if (!exactMatch && !containsAllWords && !partialMatch) {
-                return false;
-            }
-        }
-        return true;
-    });
+    const categories = useMemo(() => {
+        const cats = new Set();
+        products.forEach(p => p.category && cats.add(p.category));
+        return Array.from(cats).sort();
+    }, [products]);
 
-    // If no products match, show top 3 closest by Levenshtein distance
-    if (search && filteredProducts.length === 0 && products.length > 0) {
-        const searchTerm = search.toLowerCase();
-        const scored = products.map(product => ({
-            product,
-            score: levenshtein(product.name.toLowerCase(), searchTerm)
-        }));
-        scored.sort((a, b) => a.score - b.score);
-        filteredProducts = scored.slice(0, 3).map(s => s.product);
-    }
+    const filteredProducts = useMemo(() => {
+        let filtered = [...products];
+        if (filters.categories.length > 0) {
+            filtered = filtered.filter(p => filters.categories.includes(p.category));
+        }
+        filtered = filtered.filter(p => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
+        if (search) {
+            const searchTerm = search.toLowerCase();
+            filtered = filtered.filter(p => {
+                const productName = p.name.toLowerCase();
+                return productName.includes(searchTerm) || levenshtein(productName, searchTerm) <= 2;
+            });
+        }
+        switch (sortBy) {
+            case 'price-low':
+                filtered.sort((a, b) => a.price - b.price);
+                break;
+            case 'price-high':
+                filtered.sort((a, b) => b.price - a.price);
+                break;
+            default:
+                filtered.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        }
+        return filtered;
+    }, [products, filters, sortBy, search]);
 
     const pageTitle = category 
         ? category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
@@ -94,22 +75,78 @@ import { useSelector } from "react-redux"
         ? `Search: ${search}`
         : 'All Jewellery';
 
+    const activeFilterCount = filters.categories.length + (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000 ? 1 : 0);
+
     return (
-        <div className="min-h-[70vh] mx-6">
-            <div className=" max-w-7xl mx-auto">
-                <h1 onClick={() => router.push('/shop')} className="text-2xl text-slate-500 my-6 flex items-center gap-2 cursor-pointer"> 
-                    {(search || category) && <MoveLeftIcon size={20} />}  
-                    {category ? (
-                        <>Category: <span className="text-slate-700 font-medium">{pageTitle}</span></>
-                    ) : search ? (
-                        <>Search: <span className="text-slate-700 font-medium">{search}</span></>
-                    ) : (
-                        <>All <span className="text-slate-700 font-medium">Products</span></>
-                    )}
+        <div className="min-h-screen bg-white">
+            <div className="max-w-7xl mx-auto px-4 py-6">
+                <h1 className="text-3xl md:text-4xl font-serif text-gray-900 mb-6">
+                    {category ? pageTitle : search ? `Search: ${search}` : 'All Jewellery'} <span className="text-gray-500 text-xl">({filteredProducts.length} results)</span>
                 </h1>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mx-auto mb-32">
+
+                {/* Filter Bar */}
+                <div className="flex flex-wrap items-center gap-3 mb-6 pb-4 border-b">
+                    {/* Filter Toggle */}
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
+                    >
+                        <FilterIcon size={18} />
+                        Filter
+                        {activeFilterCount > 0 && (
+                            <span className="bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full ml-1">
+                                {activeFilterCount}
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Price Filter Chip */}
+                    {(filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) && (
+                        <button
+                            onClick={() => setFilters(prev => ({ ...prev, priceRange: [0, 100000] }))}
+                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50"
+                        >
+                            <span>₹{filters.priceRange[0].toLocaleString('en-IN')} - ₹{filters.priceRange[1].toLocaleString('en-IN')}</span>
+                            <XIcon size={14} />
+                        </button>
+                    )}
+
+                    {/* Category Quick Filters */}
+                    {categories.slice(0, 5).map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => setFilters(prev => ({
+                                ...prev,
+                                categories: prev.categories.includes(cat)
+                                    ? prev.categories.filter(c => c !== cat)
+                                    : [...prev.categories, cat]
+                            }))}
+                            className={`px-3 py-1.5 text-sm ${filters.categories.includes(cat) ? 'bg-orange-500 text-white border-orange-500' : 'bg-white border border-gray-300 text-gray-700'} rounded flex items-center gap-1`}
+                        >
+                            {cat}
+                            {filters.categories.includes(cat) && <XIcon size={12} />}
+                        </button>
+                    ))}
+
+                    {/* Sort Dropdown */}
+                    <div className="ml-auto flex items-center gap-2">
+                        <span className="text-sm text-gray-600">Sort By:</span>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="border border-gray-300 rounded px-3 py-2 text-sm bg-white"
+                        >
+                            <option value="newest">Best Matches</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* Product Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mb-32">
                     {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)
+                        filteredProducts.map((product) => <ProductCard key={product._id || product.id} product={product} />)
                     ) : (
                         <div className="col-span-full text-center py-12">
                             <p className="text-gray-500 text-lg">No products found</p>
@@ -117,7 +154,7 @@ import { useSelector } from "react-redux"
                                 onClick={() => router.push('/shop')}
                                 className="mt-4 px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition"
                             >
-                                View All Jewellery
+                                Clear Filters
                             </button>
                         </div>
                     )}

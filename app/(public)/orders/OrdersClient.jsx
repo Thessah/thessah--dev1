@@ -61,19 +61,19 @@ export default function OrdersClient() {
                 <div className="my-20 max-w-7xl mx-auto">
                     <PageTitle heading="My Orders" text={`Showing total ${orders.length} orders`} linkText={'Go to home'} />
 
-                    {/* If you display currency here, use ₹ instead of ₹ */}
+                    {/* If you display currency here, use AEDinstead of AED*/}
                     <table className="w-full max-w-5xl text-slate-500 table-auto border-separate border-spacing-y-12 border-spacing-x-4">
                         <thead>
                             <tr className="max-sm:text-sm text-slate-600 max-md:hidden">
                                 <th className="text-left">Product</th>
-                                <th className="text-center">Total Price (₹)</th>
+                                <th className="text-center">Total Price (AED)</th>
                                 <th className="text-left">Address</th>
                                 <th className="text-left">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {orders.map((order) => (
-                                <OrderItem order={order} key={order.id} currencySymbol="₹" />
+                                <OrderItem order={order} key={order.id} currencySymbol="AED" />
                             ))}
                         </tbody>
                     </table>

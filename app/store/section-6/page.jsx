@@ -13,7 +13,7 @@ export default function Section6Settings() {
       titleColor: '#dc2626', // red-600
       subtitle: "Breathtaking gifts for your loved one's",
       subtitleColor: '#374151', // gray-700
-      price: 'STARTING AT ₹10,000',
+      price: 'STARTING AT AED10,000',
       priceColor: '#dc2626', // red-600
       buttonText: 'Explore Now',
       buttonLink: '/shop?collection=gifts',

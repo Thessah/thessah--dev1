@@ -381,7 +381,7 @@ export async function POST(request) {
                 payment_method_types: ['card'],
                 line_items: [{
                     price_data: {
-                        currency: '₹',
+                        currency: 'AED',
                         product_data: { name: 'Order' },
                         unit_amount: Math.round(fullAmount * 100)
                     },
