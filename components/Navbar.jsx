@@ -63,6 +63,7 @@ const Navbar = () => {
   const cartCount = useSelector((state) => state.cart.total);
   const [signInOpen, setSignInOpen] = useState(false);
   const [firebaseUser, setFirebaseUser] = useState(undefined);
+  const userDropdownRef = useRef(null);
 
   // Show sign-in modal automatically on mobile for guest users
   useEffect(() => {
@@ -70,6 +71,21 @@ const Navbar = () => {
       setSignInOpen(true);
     }
   }, [firebaseUser]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+    if (userDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [userDropdownOpen]);
   const [isClient, setIsClient] = useState(false);
   useEffect(() => { setIsClient(true); }, []);
   const router = useRouter();
@@ -235,9 +251,33 @@ const Navbar = () => {
   const handleCartClick = (e) => {
     e.preventDefault();
     if (!cartCount || cartCount === 0) {
-      toast.error("Your cart is empty. Add some products to get started!", {
-        duration: 3000,
-        icon: '🛒',
+      toast((t) => (
+        <div className="flex items-center gap-3">
+          <div className="flex-shrink-0">
+            <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="font-semibold text-gray-900">Your cart is empty!</p>
+            <p className="text-sm text-gray-600 mt-0.5">Start shopping to add items to your cart</p>
+          </div>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              router.push('/shop');
+            }}
+            className="px-3 py-1.5 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition font-medium"
+          >
+            Shop Now
+          </button>
+        </div>
+      ), {
+        duration: 4000,
+        style: {
+          padding: '16px',
+          maxWidth: '500px',
+        },
       });
       return;
     }
@@ -304,15 +344,21 @@ const Navbar = () => {
 
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="flex-1">
-              <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full border border-gray-200">
-                <Search size={16} className="text-gray-500 flex-shrink-0" />
+              <div className="flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-md border border-green-200">
+                <Search size={18} className="text-gray-400 flex-shrink-0" />
                 <input
                   type="text"
-                  placeholder="Search for products"
+                  placeholder="Search for products..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-transparent outline-none placeholder-gray-500 text-gray-700 text-sm"
+                  className="w-full bg-transparent outline-none placeholder-gray-400 text-gray-700 text-sm"
                 />
+                <button type="button" className="p-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-400">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+                  </svg>
+                </button>
               </div>
             </form>
 
@@ -354,18 +400,28 @@ const Navbar = () => {
           </div>
 
           {/* Center - Search Bar */}
-          <div className="hidden lg:flex items-center flex-1 justify-center px-8 max-w-2xl">
-            {/* Search Bar */}
-            <form onSubmit={handleSearch} className="flex items-center w-full text-sm gap-2 bg-gray-50 px-4 py-2.5 rounded-md border border-gray-300 focus-within:border-gray-400 focus-within:bg-white transition">
-              <Search size={18} className="text-gray-500 flex-shrink-0" />
+          <div className="hidden lg:flex items-center flex-1 justify-center px-8 max-w-3xl">
+            {/* Search Bar - Tanishq Style */}
+            <form onSubmit={handleSearch} className="flex items-center w-full gap-3 bg-gray-50 px-5 py-2.5 rounded-md border border-green-200 hover:bg-gray-100 hover:border-green-300 focus-within:bg-white focus-within:border-green-400 focus-within:shadow-sm transition-all">
+              <Search size={18} className="text-gray-400 flex-shrink-0" />
               <input
                 type="text"
-                placeholder={searchPlaceholder || "Search products"}
+                placeholder={searchPlaceholder || "Search for engagement rings"}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-transparent outline-none placeholder-gray-500 text-gray-700"
-                required
+                className="w-full bg-transparent outline-none placeholder-gray-400 text-gray-700 text-[15px] font-normal"
               />
+              <button 
+                type="button" 
+                className="flex-shrink-0 p-1 hover:bg-gray-200 rounded transition"
+                onClick={() => setShowImageSearch(true)}
+                title="Search by image"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-400">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+                </svg>
+              </button>
               {/* Camera Icon for image search (temporarily hidden)
               <button type="button" className="flex-shrink-0" onClick={() => setShowImageSearch(true)}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-gray-500 hover:text-blue-600">
@@ -428,12 +484,12 @@ const Navbar = () => {
           {/* Right Side - Actions */}
           <div className="hidden lg:flex items-center gap-4 flex-shrink-0">
             {/* Store Locator */}
-            <button className="flex flex-col items-center gap-0.5 hover:text-red-600 transition text-gray-600">
+            <Link href="/find-store" className="flex flex-col items-center gap-0.5 hover:text-red-600 transition text-gray-600">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
               <span className="text-xs font-medium">Store</span>
-            </button>
+            </Link>
 
             {/* Wishlist */}
             <Link href={firebaseUser ? "/dashboard/wishlist" : "/wishlist"} className="relative flex flex-col items-center gap-0.5 hover:text-red-600 transition text-gray-600">
@@ -459,12 +515,11 @@ const Navbar = () => {
 
             {/* Login/User Button */}
             {firebaseUser ? (
-              <div
-                className="relative"
-                onMouseEnter={() => setUserDropdownOpen(true)}
-                onMouseLeave={() => setUserDropdownOpen(false)}
-              >
-                <div className="flex flex-col items-center gap-0.5 cursor-pointer hover:text-red-600 transition text-gray-600">
+              <div className="relative" ref={userDropdownRef}>
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex flex-col items-center gap-0.5 cursor-pointer hover:text-red-600 transition text-gray-600"
+                >
                   {firebaseUser.photoURL ? (
                     <Image src={firebaseUser.photoURL} alt="User" width={24} height={24} className="rounded-full object-cover" />
                   ) : (
@@ -473,7 +528,7 @@ const Navbar = () => {
                     </span>
                   )}
                   <span className="text-xs font-medium">Account</span>
-                </div>
+                </button>
                 {/* User Dropdown */}
                 {userDropdownOpen && (
                   <div className="absolute right-0 top-full mt-1 min-w-[200px] bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-2">
@@ -689,17 +744,26 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Search Bar - Below main navbar on mobile */}
-        <div className="lg:hidden pb-3" style={{ backgroundColor: '#ffffff', borderTop: '1px solid #e5e7eb' }}>
-          <form onSubmit={handleSearch} className="flex items-center text-sm gap-2 bg-gray-50 mx-4 px-4 py-2.5 rounded-md border border-gray-300">
-            <Search size={18} className="text-gray-500" />
+        <div className="lg:hidden pb-3 px-4" style={{ backgroundColor: '#ffffff' }}>
+          <form onSubmit={handleSearch} className="flex items-center gap-3 bg-gray-50 px-4 py-2.5 rounded-md border border-green-200">
+            <Search size={18} className="text-gray-400" />
             <input
               type="text"
-              placeholder={searchPlaceholder || "Search jewellery"}
+              placeholder={searchPlaceholder || "Search for engagement rings"}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-transparent outline-none placeholder-gray-500 text-gray-700"
-              required
+              className="w-full bg-transparent outline-none placeholder-gray-400 text-gray-700 text-sm"
             />
+            <button 
+              type="button"
+              onClick={() => setShowImageSearch(true)}
+              className="p-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-400">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+              </svg>
+            </button>
           </form>
         </div>
 

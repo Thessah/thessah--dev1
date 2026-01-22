@@ -26,6 +26,7 @@ export default function CategoryPage() {
   const [loading, setLoading] = useState(false)
   const [filters, setFilters] = useState({ priceRange: [0, 100000], categories: [] })
   const [sortBy, setSortBy] = useState('newest')
+  const [showFilters, setShowFilters] = useState(false)
 
   useEffect(() => {
     const fetchCategoryNameAndProducts = async () => {
@@ -62,8 +63,12 @@ export default function CategoryPage() {
 
   // Prefer fetchedProducts if available, else fallback to Redux filtered
   const filteredProducts = useMemo(() => {
-    let products = Array.isArray(fetchedProducts) ? fetchedProducts : 
-      products && Array.isArray(products) ? products.filter((p) => {
+    let productsToFilter = [];
+    
+    if (Array.isArray(fetchedProducts)) {
+      productsToFilter = fetchedProducts;
+    } else if (products && Array.isArray(products)) {
+      productsToFilter = products.filter((p) => {
         const normalize = (val) => (val || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
         const catSlug = normalize(p.category);
         const altSlug = normalize(p.categorySlug);
@@ -73,26 +78,27 @@ export default function CategoryPage() {
           altSlug === normalizedSlug ||
           catName === normalizedSlug.replace(/-/g, ' ')
         );
-      }) : [];
+      });
+    }
     
     // Apply filters
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 100000) {
-      products = products.filter(p => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
+    if (filters.priceRange && filters.priceRange[0] > 0 || filters.priceRange && filters.priceRange[1] < 100000) {
+      productsToFilter = productsToFilter.filter(p => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
     }
 
     // Sort
     switch (sortBy) {
       case 'price-low':
-        products.sort((a, b) => a.price - b.price);
+        productsToFilter.sort((a, b) => (a.price || 0) - (b.price || 0));
         break;
       case 'price-high':
-        products.sort((a, b) => b.price - a.price);
+        productsToFilter.sort((a, b) => (b.price || 0) - (a.price || 0));
         break;
       default:
-        products.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        productsToFilter.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     }
 
-    return products;
+    return productsToFilter;
   }, [products, normalizedSlug, fetchedProducts, filters, sortBy])
 
   return (
@@ -119,8 +125,10 @@ export default function CategoryPage() {
       <div className="flex flex-wrap items-center gap-3 mb-6 pb-4 border-b">
         {/* Filter Toggle */}
         <button
-          onClick={() => {}}
-          className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
+          onClick={() => setShowFilters(!showFilters)}
+          className={`flex items-center gap-2 border px-4 py-2 rounded hover:bg-gray-50 transition ${
+            showFilters ? 'border-emerald-500 bg-emerald-50 text-emerald-700' : 'border-gray-300'
+          }`}
         >
           <FilterIcon size={18} />
           Filter
@@ -151,6 +159,85 @@ export default function CategoryPage() {
           </select>
         </div>
       </div>
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <XIcon size={20} />
+            </button>
+          </div>
+
+          {/* Price Range Filter */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Price Range
+            </label>
+            <div className="space-y-3">
+              <div className="flex items-center gap-4">
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={filters.priceRange[0]}
+                  onChange={(e) => setFilters(prev => ({
+                    ...prev,
+                    priceRange: [parseInt(e.target.value) || 0, prev.priceRange[1]]
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+                <span className="text-gray-500">to</span>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={filters.priceRange[1]}
+                  onChange={(e) => setFilters(prev => ({
+                    ...prev,
+                    priceRange: [prev.priceRange[0], parseInt(e.target.value) || 100000]
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+              <div className="flex gap-2">
+                {[
+                  { label: 'Under ₹5,000', value: [0, 5000] },
+                  { label: '₹5,000 - ₹10,000', value: [5000, 10000] },
+                  { label: '₹10,000 - ₹25,000', value: [10000, 25000] },
+                  { label: 'Over ₹25,000', value: [25000, 100000] },
+                ].map((range) => (
+                  <button
+                    key={range.label}
+                    onClick={() => setFilters(prev => ({ ...prev, priceRange: range.value }))}
+                    className="px-3 py-1.5 text-sm border border-gray-300 rounded-full hover:bg-emerald-50 hover:border-emerald-500 hover:text-emerald-700 transition"
+                  >
+                    {range.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4 border-t">
+            <button
+              onClick={() => setFilters({ priceRange: [0, 100000], categories: [] })}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+            >
+              Clear All
+            </button>
+            <button
+              onClick={() => setShowFilters(false)}
+              className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+            >
+              Apply Filters
+            </button>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="bg-white border border-gray-200 rounded-lg p-8 text-center text-gray-600">Loading…</div>

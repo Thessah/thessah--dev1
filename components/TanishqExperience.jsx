@@ -28,7 +28,8 @@ export default function TanishqExperience() {
 
       if (settingsRes.data.settings?.section7Experiences) {
         const dbExperiences = settingsRes.data.settings.section7Experiences
-        const validExperiences = dbExperiences.filter(exp => exp.title && exp.image)
+        // Show all experiences, even without images
+        const validExperiences = dbExperiences.filter(exp => exp.title)
         setExperiences(validExperiences)
       }
 
@@ -39,7 +40,8 @@ export default function TanishqExperience() {
     }
   }
 
-  if (!experiences.length) {
+  // Show section even if no experiences are configured yet
+  if (loading) {
     return null
   }
 
@@ -58,19 +60,27 @@ export default function TanishqExperience() {
 
         {/* Grid Layout - 3 columns x 2 rows */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {experiences.map((experience, index) => (
+          {experiences.length > 0 ? experiences.map((experience, index) => (
             <Link
               key={index}
               href={experience.link || '#'}
               className="group relative overflow-hidden rounded-xl shadow-md hover:shadow-2xl transition-all duration-500 bg-white"
             >
               {/* Image Container */}
-              <div className="aspect-[4/3] relative overflow-hidden">
-                <img
-                  src={experience.image}
-                  alt={experience.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
+              <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+                {experience.image ? (
+                  <img
+                    src={experience.image}
+                    alt={experience.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                    <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
               </div>
               
               {/* Title */}
@@ -80,7 +90,11 @@ export default function TanishqExperience() {
                 </h3>
               </div>
             </Link>
-          ))}
+          )) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500">No experiences configured yet. Go to <Link href="/store/section-7" className="text-blue-600 hover:underline">/store/section-7</Link> to add them.</p>
+            </div>
+          )}
         </div>
       </div>
     </section>
